@@ -67,9 +67,10 @@ const imageUrl = data.CoverImage?.url.default || null
 
       <div class="mt-4 md:mt-8">
         <a
+
           href={data.CallToAction?.url?.default}
-          class="inline-block rounded bg-emerald-600 px-12 py-3 text-sm font-medium text-white transition hover:bg-emerald-700 focus:outline-none focus:ring focus:ring-yellow-400"
-        >
+          class="inline-block rounded bg-yellow-400 px-12 py-3 text-sm font-medium text-black transition hover:bg-blue-700 focus:outline-none focus:ring focus:ring-yellow-400">
+
           {data.CallToAction?.text}
         </a>
       </div>
@@ -78,8 +79,11 @@ const imageUrl = data.CoverImage?.url.default || null
 
   <img
     alt=""
+
+
     src={data.CoverImage?.url?.default}
-    class="h-56 w-full object-cover sm:h-full"
+    class="h-56  object-cover sm:h-full p-12 "
+
   />
 </section>
   }

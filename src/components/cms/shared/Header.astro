@@ -1,5 +1,11 @@
 ---
+import { getOptimizelySdk } from "../../../services/graphql/getSdk"
+import { Locales } from "../../../services/graphql/__generated/sdk"
 
+
+const optiResponse = await getOptimizelySdk("published").SiteLogoQuery();
+console.log(optiResponse)
+const logoimage = optiResponse.SiteLogo.items[0].HeaderLogo.url.default;
 ---
 <header class="bg-gray-50 sticky z-50 top-0">
     <div class="mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8">
@@ -13,7 +19,8 @@
                     <!--            fill="currentColor"-->
                     <!--    />-->
                     <!--</svg>-->
-                    <img class="h-32" src="/mosey-coffee.png"/>
+               <!--      <img class="h-32" src="/mosey-coffee.png"/> -->
+                        <img class="h-32" src={logoimage} />
                 </a>
             </div>
 

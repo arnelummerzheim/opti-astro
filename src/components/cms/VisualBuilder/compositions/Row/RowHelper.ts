@@ -9,7 +9,7 @@ export function getRowStyles(row: CompositionStructureNode) {
   // console.log(dictionary);
 
   enum RowFromClasses {
-    md = "md:flex-row",
+    md = "md:flex-row justify-center w-1/2 mx-auto",
     lg = "lg:flex-row",
     xl = "xl:flex-row",
   }
