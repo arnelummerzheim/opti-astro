@@ -51,6 +51,70 @@ input AnnouncementElementWhereInput {
   _or: [AnnouncementElementWhereInput]
 }
 
+type ArticleGroupPage implements IData & _IContent & _IPage {
+  LandingPageSeoSettings: PageSeoSettings_oldProperty
+  MainContent: [_IContent]
+  _children: QueryRef @deprecated(reason: "Use `_link` field instead")
+  _deleted: Bool
+  _fulltext(highlight: HighlightOptions): [String]
+  _id: String
+  _link(type: LinkTypes): QueryRef
+  _metadata: IContentMetadata
+  _modified: Date
+  _score: Float
+  articleGroupIntro: RichText
+  articleGroupTitle: String
+}
+
+type ArticleGroupPageAutocomplete {
+  LandingPageSeoSettings(limit: Int! = 10, value: String!): [String]
+  MainContent: _IContentAutocomplete
+  _metadata: IContentMetadataAutocomplete
+  articleGroupIntro: RichTextAutocomplete
+  articleGroupTitle(limit: Int! = 10, value: String!): [String]
+}
+
+type ArticleGroupPageFacet {
+  LandingPageSeoSettings(filters: [String!], limit: Int! = 10, orderBy: OrderBy = DESC, orderType: OrderByFacetType = COUNT): [StringFacet]
+  MainContent: _IContentFacet
+  _metadata: IContentMetadataFacet
+  articleGroupIntro: RichTextFacet
+  articleGroupTitle(filters: [String!], limit: Int! = 10, orderBy: OrderBy = DESC, orderType: OrderByFacetType = COUNT): [StringFacet]
+}
+
+input ArticleGroupPageOrderByInput {
+  LandingPageSeoSettings: OrderBy
+  MainContent: _IContentOrderByInput
+  _metadata: IContentMetadataOrderByInput
+  _minimumScore: Float
+  _modified: OrderBy
+  _ranking: Ranking
+  _semanticWeight: Float
+  articleGroupIntro: RichTextOrderByInput
+  articleGroupTitle: OrderBy
+}
+
+type ArticleGroupPageOutput {
+  autocomplete: ArticleGroupPageAutocomplete
+  cursor: String
+  facets: ArticleGroupPageFacet
+  items: [ArticleGroupPage]
+  total(all: Boolean): Int
+}
+
+input ArticleGroupPageWhereInput {
+  LandingPageSeoSettings: StringFilterInput
+  MainContent: _IContentWhereInput
+  _and: [ArticleGroupPageWhereInput]
+  _fulltext: SearchableStringFilterInput
+  _metadata: IContentMetadataWhereInput
+  _modified: DateFilterInput
+  _not: [ArticleGroupPageWhereInput]
+  _or: [ArticleGroupPageWhereInput]
+  articleGroupIntro: RichTextWhereInput
+  articleGroupTitle: StringFilterInput
+}
+
 type ArticleListElement implements IData & _IComponent & _IContent {
   _children: QueryRef @deprecated(reason: "Use `_link` field instead")
   _deleted: Bool
@@ -96,8 +160,121 @@ input ArticleListElementWhereInput {
   _or: [ArticleListElementWhereInput]
 }
 
+type ArticlePage implements IData & _IContent & _IPage {
+  _children: QueryRef @deprecated(reason: "Use `_link` field instead")
+  _deleted: Bool
+  _fulltext(highlight: HighlightOptions): [String]
+  _id: String
+  _link(type: LinkTypes): QueryRef
+  _metadata: IContentMetadata
+  _modified: Date
+  _score: Float
+  articleAuthors: [String]
+  articleBody: RichText
+  articleHeroImage: ContentReference
+  articleSeoSettings: PageSeoSettings_oldProperty
+  articleSummary: RichText
+  articleTitle: String
+}
+
+type ArticlePageAutocomplete {
+  _metadata: IContentMetadataAutocomplete
+  articleBody: RichTextAutocomplete
+  articleHeroImage: ContentReferenceAutocomplete
+  articleSeoSettings(limit: Int! = 10, value: String!): [String]
+  articleSummary: RichTextAutocomplete
+}
+
+type ArticlePageFacet {
+  _metadata: IContentMetadataFacet
+  articleBody: RichTextFacet
+  articleHeroImage: ContentReferenceFacet
+  articleSeoSettings(filters: [String!], limit: Int! = 10, orderBy: OrderBy = DESC, orderType: OrderByFacetType = COUNT): [StringFacet]
+  articleSummary: RichTextFacet
+}
+
+input ArticlePageOrderByInput {
+  _metadata: IContentMetadataOrderByInput
+  _minimumScore: Float
+  _modified: OrderBy
+  _ranking: Ranking
+  _semanticWeight: Float
+  articleBody: RichTextOrderByInput
+  articleHeroImage: ContentReferenceOrderByInput
+  articleSeoSettings: OrderBy
+  articleSummary: RichTextOrderByInput
+}
+
+type ArticlePageOutput {
+  autocomplete: ArticlePageAutocomplete
+  cursor: String
+  facets: ArticlePageFacet
+  items: [ArticlePage]
+  total(all: Boolean): Int
+}
+
+input ArticlePageWhereInput {
+  _and: [ArticlePageWhereInput]
+  _fulltext: SearchableStringFilterInput
+  _metadata: IContentMetadataWhereInput
+  _modified: DateFilterInput
+  _not: [ArticlePageWhereInput]
+  _or: [ArticlePageWhereInput]
+  articleBody: RichTextWhereInput
+  articleHeroImage: ContentReferenceWhereInput
+  articleSeoSettings: StringFilterInput
+  articleSummary: RichTextWhereInput
+}
+
+type BannerBlock implements IData & _IComponent & _IContent {
+  Title: String
+  _children: QueryRef @deprecated(reason: "Use `_link` field instead")
+  _deleted: Bool
+  _fulltext(highlight: HighlightOptions): [String]
+  _id: String
+  _link(type: LinkTypes): QueryRef
+  _metadata: IContentMetadata
+  _modified: Date
+  _score: Float
+}
+
+type BannerBlockAutocomplete {
+  _metadata: IContentMetadataAutocomplete
+}
+
+type BannerBlockFacet {
+  _metadata: IContentMetadataFacet
+}
+
+input BannerBlockOrderByInput {
+  _metadata: IContentMetadataOrderByInput
+  _minimumScore: Float
+  _modified: OrderBy
+  _ranking: Ranking
+  _semanticWeight: Float
+}
+
+type BannerBlockOutput {
+  autocomplete: BannerBlockAutocomplete
+  cursor: String
+  facets: BannerBlockFacet
+  items: [BannerBlock]
+  total(all: Boolean): Int
+}
+
+input BannerBlockWhereInput {
+  _and: [BannerBlockWhereInput]
+  _fulltext: SearchableStringFilterInput
+  _metadata: IContentMetadataWhereInput
+  _modified: DateFilterInput
+  _not: [BannerBlockWhereInput]
+  _or: [BannerBlockWhereInput]
+}
+
 type BlankExperience implements IData & _IContent & _IExperience & _IPage {
   BlankExperienceSeoSettings: PageSeoSettingsProperty
+  HeaderLogo: ContentReference
+  SeoSettings: PageSeoSettings_oldProperty
   _children: QueryRef @deprecated(reason: "Use `_link` field instead")
   _deleted: Bool
   _fulltext(highlight: HighlightOptions): [String]
@@ -111,18 +288,24 @@ type BlankExperience implements IData & _IContent & _IExperience & _IPage {
 
 type BlankExperienceAutocomplete {
   BlankExperienceSeoSettings: PageSeoSettingsPropertyAutocomplete
+  HeaderLogo: ContentReferenceAutocomplete
+  SeoSettings(limit: Int! = 10, value: String!): [String]
   _metadata: IContentMetadataAutocomplete
   composition: CompositionStructureNodeAutocomplete
 }
 
 type BlankExperienceFacet {
   BlankExperienceSeoSettings: PageSeoSettingsPropertyFacet
+  HeaderLogo: ContentReferenceFacet
+  SeoSettings(filters: [String!], limit: Int! = 10, orderBy: OrderBy = DESC, orderType: OrderByFacetType = COUNT): [StringFacet]
   _metadata: IContentMetadataFacet
   composition: CompositionStructureNodeFacet
 }
 
 input BlankExperienceOrderByInput {
   BlankExperienceSeoSettings: PageSeoSettingsPropertyOrderByInput
+  HeaderLogo: ContentReferenceOrderByInput
+  SeoSettings: OrderBy
   _metadata: IContentMetadataOrderByInput
   _minimumScore: Float
   _modified: OrderBy
@@ -141,6 +324,8 @@ type BlankExperienceOutput {
 
 input BlankExperienceWhereInput {
   BlankExperienceSeoSettings: PageSeoSettingsPropertyWhereInput
+  HeaderLogo: ContentReferenceWhereInput
+  SeoSettings: StringFilterInput
   _and: [BlankExperienceWhereInput]
   _fulltext: SearchableStringFilterInput
   _metadata: IContentMetadataWhereInput
@@ -389,6 +574,59 @@ input ButtonBlockWhereInput {
   _or: [ButtonBlockWhereInput]
 }
 
+type ButtonBlock_2 implements IData & _IComponent & _IContent {
+  _children: QueryRef @deprecated(reason: "Use `_link` field instead")
+  _deleted: Bool
+  _fulltext(highlight: HighlightOptions): [String]
+  _id: String
+  _link(type: LinkTypes): QueryRef
+  _metadata: IContentMetadata
+  _modified: Date
+  _score: Float
+  buttonType: String
+  className: String
+  link: ContentUrl
+  text: String
+  variant: String
+}
+
+type ButtonBlock_2Autocomplete {
+  _metadata: IContentMetadataAutocomplete
+  link: ContentUrlAutocomplete
+}
+
+type ButtonBlock_2Facet {
+  _metadata: IContentMetadataFacet
+  link: ContentUrlFacet
+}
+
+input ButtonBlock_2OrderByInput {
+  _metadata: IContentMetadataOrderByInput
+  _minimumScore: Float
+  _modified: OrderBy
+  _ranking: Ranking
+  _semanticWeight: Float
+  link: ContentUrlOrderByInput
+}
+
+type ButtonBlock_2Output {
+  autocomplete: ButtonBlock_2Autocomplete
+  cursor: String
+  facets: ButtonBlock_2Facet
+  items: [ButtonBlock_2]
+  total(all: Boolean): Int
+}
+
+input ButtonBlock_2WhereInput {
+  _and: [ButtonBlock_2WhereInput]
+  _fulltext: SearchableStringFilterInput
+  _metadata: IContentMetadataWhereInput
+  _modified: DateFilterInput
+  _not: [ButtonBlock_2WhereInput]
+  _or: [ButtonBlock_2WhereInput]
+  link: ContentUrlWhereInput
+}
+
 type CTAElement implements IData & _IComponent & _IContent {
   Link: ContentUrl
   Text: String
@@ -446,6 +684,7 @@ type CardBlock implements IData & _IComponent & _IContent {
   CardHeading: String
   CardIcon: ContentReference
   CardImage: ContentReference
+  CardImageLayout: String
   CardSubHeading: String
   ImageLayout: String
   _children: QueryRef @deprecated(reason: "Use `_link` field instead")
@@ -1190,6 +1429,198 @@ input Decay {
   scale: Int = 10
 }
 
+type DefaultImage implements IData & _IContent & _IImage & _IMedia {
+  _children: QueryRef @deprecated(reason: "Use `_link` field instead")
+  _deleted: Bool
+  _fulltext(highlight: HighlightOptions): [String]
+  _id: String
+  _link(type: LinkTypes): QueryRef
+  _metadata: IContentMetadata
+  _modified: Date
+  _score: Float
+}
+
+type DefaultImageAutocomplete {
+  _metadata: IContentMetadataAutocomplete
+}
+
+type DefaultImageFacet {
+  _metadata: IContentMetadataFacet
+}
+
+input DefaultImageOrderByInput {
+  _metadata: IContentMetadataOrderByInput
+  _minimumScore: Float
+  _modified: OrderBy
+  _ranking: Ranking
+  _semanticWeight: Float
+}
+
+type DefaultImageOutput {
+  autocomplete: DefaultImageAutocomplete
+  cursor: String
+  facets: DefaultImageFacet
+  items: [DefaultImage]
+  total(all: Boolean): Int
+}
+
+input DefaultImageWhereInput {
+  _and: [DefaultImageWhereInput]
+  _fulltext: SearchableStringFilterInput
+  _metadata: IContentMetadataWhereInput
+  _modified: DateFilterInput
+  _not: [DefaultImageWhereInput]
+  _or: [DefaultImageWhereInput]
+}
+
+type DefaultVideo implements IData & _IContent & _IMedia & _IVideo {
+  _children: QueryRef @deprecated(reason: "Use `_link` field instead")
+  _deleted: Bool
+  _fulltext(highlight: HighlightOptions): [String]
+  _id: String
+  _link(type: LinkTypes): QueryRef
+  _metadata: IContentMetadata
+  _modified: Date
+  _score: Float
+}
+
+type DefaultVideoAutocomplete {
+  _metadata: IContentMetadataAutocomplete
+}
+
+type DefaultVideoFacet {
+  _metadata: IContentMetadataFacet
+}
+
+input DefaultVideoOrderByInput {
+  _metadata: IContentMetadataOrderByInput
+  _minimumScore: Float
+  _modified: OrderBy
+  _ranking: Ranking
+  _semanticWeight: Float
+}
+
+type DefaultVideoOutput {
+  autocomplete: DefaultVideoAutocomplete
+  cursor: String
+  facets: DefaultVideoFacet
+  items: [DefaultVideo]
+  total(all: Boolean): Int
+}
+
+input DefaultVideoWhereInput {
+  _and: [DefaultVideoWhereInput]
+  _fulltext: SearchableStringFilterInput
+  _metadata: IContentMetadataWhereInput
+  _modified: DateFilterInput
+  _not: [DefaultVideoWhereInput]
+  _or: [DefaultVideoWhereInput]
+}
+
+type Dictionary implements IData & _IComponent & _IContent {
+  DictionaryItems: [DictionaryItemProperty]
+  DictionaryKey(highlight: HighlightOptions): String
+  _children: QueryRef @deprecated(reason: "Use `_link` field instead")
+  _deleted: Bool
+  _fulltext(highlight: HighlightOptions): [String]
+  _id: String
+  _link(type: LinkTypes): QueryRef
+  _metadata: IContentMetadata
+  _modified: Date
+  _score: Float
+}
+
+type DictionaryAutocomplete {
+  DictionaryItems(limit: Int! = 10, value: String!): [String]
+  _metadata: IContentMetadataAutocomplete
+}
+
+type DictionaryFacet {
+  DictionaryItems(filters: [String!], limit: Int! = 10, orderBy: OrderBy = DESC, orderType: OrderByFacetType = COUNT): [StringFacet]
+  DictionaryKey(filters: [String!], limit: Int! = 10, orderBy: OrderBy = DESC, orderType: OrderByFacetType = COUNT): [StringFacet]
+  _metadata: IContentMetadataFacet
+}
+
+type DictionaryItem implements IData & _IComponent & _IContent {
+  DictionaryItemKey: String
+  DictionaryItemValue: String
+  _children: QueryRef @deprecated(reason: "Use `_link` field instead")
+  _deleted: Bool
+  _fulltext(highlight: HighlightOptions): [String]
+  _id: String
+  _link(type: LinkTypes): QueryRef
+  _metadata: IContentMetadata
+  _modified: Date
+  _score: Float
+}
+
+type DictionaryItemAutocomplete {
+  _metadata: IContentMetadataAutocomplete
+}
+
+type DictionaryItemFacet {
+  _metadata: IContentMetadataFacet
+}
+
+input DictionaryItemOrderByInput {
+  _metadata: IContentMetadataOrderByInput
+  _minimumScore: Float
+  _modified: OrderBy
+  _ranking: Ranking
+  _semanticWeight: Float
+}
+
+type DictionaryItemOutput {
+  autocomplete: DictionaryItemAutocomplete
+  cursor: String
+  facets: DictionaryItemFacet
+  items: [DictionaryItem]
+  total(all: Boolean): Int
+}
+
+type DictionaryItemProperty {
+  DictionaryItemKey: String
+  DictionaryItemValue: String
+}
+
+input DictionaryItemWhereInput {
+  _and: [DictionaryItemWhereInput]
+  _fulltext: SearchableStringFilterInput
+  _metadata: IContentMetadataWhereInput
+  _modified: DateFilterInput
+  _not: [DictionaryItemWhereInput]
+  _or: [DictionaryItemWhereInput]
+}
+
+input DictionaryOrderByInput {
+  DictionaryItems: OrderBy
+  DictionaryKey: OrderBy
+  _metadata: IContentMetadataOrderByInput
+  _minimumScore: Float
+  _modified: OrderBy
+  _ranking: Ranking
+  _semanticWeight: Float
+}
+
+type DictionaryOutput {
+  autocomplete: DictionaryAutocomplete
+  cursor: String
+  facets: DictionaryFacet
+  items: [Dictionary]
+  total(all: Boolean): Int
+}
+
+input DictionaryWhereInput {
+  DictionaryItems: StringFilterInput
+  DictionaryKey: SearchableStringFilterInput
+  _and: [DictionaryWhereInput]
+  _fulltext: SearchableStringFilterInput
+  _metadata: IContentMetadataWhereInput
+  _modified: DateFilterInput
+  _not: [DictionaryWhereInput]
+  _or: [DictionaryWhereInput]
+}
+
 type EventElement implements IData & _IComponent & _IContent {
   Address: String
   Date: DateTime
@@ -1332,6 +1763,70 @@ input GenericMediaWhereInput {
   _or: [GenericMediaWhereInput]
 }
 
+type HeaderBlock implements IData & _IComponent & _IContent {
+  _children: QueryRef @deprecated(reason: "Use `_link` field instead")
+  _deleted: Bool
+  _fulltext(highlight: HighlightOptions): [String]
+  _id: String
+  _link(type: LinkTypes): QueryRef
+  _metadata: IContentMetadata
+  _modified: Date
+  _score: Float
+  site_logo: ContentReference
+  site_logo_dark: ContentReference
+  site_main_navigation: [_IContent]
+  site_utility_navigation: [_IContent]
+}
+
+type HeaderBlockAutocomplete {
+  _metadata: IContentMetadataAutocomplete
+  site_logo: ContentReferenceAutocomplete
+  site_logo_dark: ContentReferenceAutocomplete
+  site_main_navigation: _IContentAutocomplete
+  site_utility_navigation: _IContentAutocomplete
+}
+
+type HeaderBlockFacet {
+  _metadata: IContentMetadataFacet
+  site_logo: ContentReferenceFacet
+  site_logo_dark: ContentReferenceFacet
+  site_main_navigation: _IContentFacet
+  site_utility_navigation: _IContentFacet
+}
+
+input HeaderBlockOrderByInput {
+  _metadata: IContentMetadataOrderByInput
+  _minimumScore: Float
+  _modified: OrderBy
+  _ranking: Ranking
+  _semanticWeight: Float
+  site_logo: ContentReferenceOrderByInput
+  site_logo_dark: ContentReferenceOrderByInput
+  site_main_navigation: _IContentOrderByInput
+  site_utility_navigation: _IContentOrderByInput
+}
+
+type HeaderBlockOutput {
+  autocomplete: HeaderBlockAutocomplete
+  cursor: String
+  facets: HeaderBlockFacet
+  items: [HeaderBlock]
+  total(all: Boolean): Int
+}
+
+input HeaderBlockWhereInput {
+  _and: [HeaderBlockWhereInput]
+  _fulltext: SearchableStringFilterInput
+  _metadata: IContentMetadataWhereInput
+  _modified: DateFilterInput
+  _not: [HeaderBlockWhereInput]
+  _or: [HeaderBlockWhereInput]
+  site_logo: ContentReferenceWhereInput
+  site_logo_dark: ContentReferenceWhereInput
+  site_main_navigation: _IContentWhereInput
+  site_utility_navigation: _IContentWhereInput
+}
+
 type HeadingElement implements IData & _IComponent & _IContent {
   _children: QueryRef @deprecated(reason: "Use `_link` field instead")
   _deleted: Bool
@@ -1460,6 +1955,7 @@ type HeroElement implements IData & _IComponent & _IContent {
 
 type HeroElementAutocomplete {
   CallToAction: LinkAutocomplete
+  Heading(limit: Int! = 10, value: String!): [String]
   Image: ContentReferenceAutocomplete
   RichText: RichTextAutocomplete
   Video: ContentReferenceAutocomplete
@@ -1468,6 +1964,7 @@ type HeroElementAutocomplete {
 
 type HeroElementFacet {
   CallToAction: LinkFacet
+  Heading(filters: [String!], limit: Int! = 10, orderBy: OrderBy = DESC, orderType: OrderByFacetType = COUNT): [StringFacet]
   Image: ContentReferenceFacet
   RichText: RichTextFacet
   Video: ContentReferenceFacet
@@ -1476,6 +1973,7 @@ type HeroElementFacet {
 
 input HeroElementOrderByInput {
   CallToAction: LinkOrderByInput
+  Heading: OrderBy
   Image: ContentReferenceOrderByInput
   RichText: RichTextOrderByInput
   Video: ContentReferenceOrderByInput
@@ -1496,6 +1994,7 @@ type HeroElementOutput {
 
 input HeroElementWhereInput {
   CallToAction: LinkWhereInput
+  Heading: StringFilterInput
   Image: ContentReferenceWhereInput
   RichText: RichTextWhereInput
   Video: ContentReferenceWhereInput
@@ -1828,6 +2327,21 @@ interface IMediaMetadata implements IContentMetadata & IInstanceMetadata {
   version: String
 }
 
+type Image implements IData & _IContent & _IImage & _IMedia {
+  _children: QueryRef @deprecated(reason: "Use `_link` field instead")
+  _deleted: Bool
+  _fulltext(highlight: HighlightOptions): [String]
+  _id: String
+  _link(type: LinkTypes): QueryRef
+  _metadata: IContentMetadata
+  _modified: Date
+  _score: Float
+}
+
+type ImageAutocomplete {
+  _metadata: IContentMetadataAutocomplete
+}
+
 type ImageElement implements IData & _IComponent & _IContent {
   _children: QueryRef @deprecated(reason: "Use `_link` field instead")
   _deleted: Bool
@@ -1878,6 +2392,10 @@ input ImageElementWhereInput {
   imageLink: ContentReferenceWhereInput
 }
 
+type ImageFacet {
+  _metadata: IContentMetadataFacet
+}
+
 type ImageMedia implements IData & _IContent & _IImage & _IMedia {
   AltText: String
   _children: QueryRef @deprecated(reason: "Use `_link` field instead")
@@ -1921,6 +2439,31 @@ input ImageMediaWhereInput {
   _modified: DateFilterInput
   _not: [ImageMediaWhereInput]
   _or: [ImageMediaWhereInput]
+}
+
+input ImageOrderByInput {
+  _metadata: IContentMetadataOrderByInput
+  _minimumScore: Float
+  _modified: OrderBy
+  _ranking: Ranking
+  _semanticWeight: Float
+}
+
+type ImageOutput {
+  autocomplete: ImageAutocomplete
+  cursor: String
+  facets: ImageFacet
+  items: [Image]
+  total(all: Boolean): Int
+}
+
+input ImageWhereInput {
+  _and: [ImageWhereInput]
+  _fulltext: SearchableStringFilterInput
+  _metadata: IContentMetadataWhereInput
+  _modified: DateFilterInput
+  _not: [ImageWhereInput]
+  _or: [ImageWhereInput]
 }
 
 type InstanceMetadata implements IContentMetadata & IInstanceMetadata {
@@ -2137,6 +2680,52 @@ enum Locales {
   en
 }
 
+type MagicButton implements IData & _IComponent & _IContent {
+  ButtonColor: String
+  ButtonText: String
+  _children: QueryRef @deprecated(reason: "Use `_link` field instead")
+  _deleted: Bool
+  _fulltext(highlight: HighlightOptions): [String]
+  _id: String
+  _link(type: LinkTypes): QueryRef
+  _metadata: IContentMetadata
+  _modified: Date
+  _score: Float
+}
+
+type MagicButtonAutocomplete {
+  _metadata: IContentMetadataAutocomplete
+}
+
+type MagicButtonFacet {
+  _metadata: IContentMetadataFacet
+}
+
+input MagicButtonOrderByInput {
+  _metadata: IContentMetadataOrderByInput
+  _minimumScore: Float
+  _modified: OrderBy
+  _ranking: Ranking
+  _semanticWeight: Float
+}
+
+type MagicButtonOutput {
+  autocomplete: MagicButtonAutocomplete
+  cursor: String
+  facets: MagicButtonFacet
+  items: [MagicButton]
+  total(all: Boolean): Int
+}
+
+input MagicButtonWhereInput {
+  _and: [MagicButtonWhereInput]
+  _fulltext: SearchableStringFilterInput
+  _metadata: IContentMetadataWhereInput
+  _modified: DateFilterInput
+  _not: [MagicButtonWhereInput]
+  _or: [MagicButtonWhereInput]
+}
+
 type MediaMetadata implements IContentMetadata & IInstanceMetadata & IMediaMetadata {
   container: String
   content(highlight: HighlightOptions): String
@@ -2267,6 +2856,77 @@ input MenuNavigationBlockWhereInput {
   _or: [MenuNavigationBlockWhereInput]
 }
 
+type NavigationMenuBlock implements IData & _IComponent & _IContent {
+  MenuNavigationHeading: String
+  NavigationLinks: [Link]
+  _children: QueryRef @deprecated(reason: "Use `_link` field instead")
+  _deleted: Bool
+  _fulltext(highlight: HighlightOptions): [String]
+  _id: String
+  _link(type: LinkTypes): QueryRef
+  _metadata: IContentMetadata
+  _modified: Date
+  _score: Float
+}
+
+type NavigationMenuBlockAutocomplete {
+  NavigationLinks: LinkAutocomplete
+  _metadata: IContentMetadataAutocomplete
+}
+
+type NavigationMenuBlockFacet {
+  NavigationLinks: LinkFacet
+  _metadata: IContentMetadataFacet
+}
+
+input NavigationMenuBlockOrderByInput {
+  NavigationLinks: LinkOrderByInput
+  _metadata: IContentMetadataOrderByInput
+  _minimumScore: Float
+  _modified: OrderBy
+  _ranking: Ranking
+  _semanticWeight: Float
+}
+
+type NavigationMenuBlockOutput {
+  autocomplete: NavigationMenuBlockAutocomplete
+  cursor: String
+  facets: NavigationMenuBlockFacet
+  items: [NavigationMenuBlock]
+  total(all: Boolean): Int
+}
+
+type NavigationMenuBlockProperty {
+  MenuNavigationHeading: String
+  NavigationLinks: [Link]
+}
+
+type NavigationMenuBlockPropertyAutocomplete {
+  NavigationLinks: LinkAutocomplete
+}
+
+type NavigationMenuBlockPropertyFacet {
+  NavigationLinks: LinkFacet
+}
+
+input NavigationMenuBlockPropertyOrderByInput {
+  NavigationLinks: LinkOrderByInput
+}
+
+input NavigationMenuBlockPropertyWhereInput {
+  NavigationLinks: LinkWhereInput
+}
+
+input NavigationMenuBlockWhereInput {
+  NavigationLinks: LinkWhereInput
+  _and: [NavigationMenuBlockWhereInput]
+  _fulltext: SearchableStringFilterInput
+  _metadata: IContentMetadataWhereInput
+  _modified: DateFilterInput
+  _not: [NavigationMenuBlockWhereInput]
+  _or: [NavigationMenuBlockWhereInput]
+}
+
 type OdpEmbedBlock implements IData & _IComponent & _IContent {
   ContentId: String
   _children: QueryRef @deprecated(reason: "Use `_link` field instead")
@@ -2310,6 +2970,58 @@ input OdpEmbedBlockWhereInput {
   _modified: DateFilterInput
   _not: [OdpEmbedBlockWhereInput]
   _or: [OdpEmbedBlockWhereInput]
+}
+
+type OfficeLocation implements IData & _IComponent & _IContent {
+  OfficeAddressCity: String
+  OfficeAddressCountry: String
+  OfficeAddressPostalCode: String
+  OfficeAddressStreet1: String
+  OfficeAddressStreet2: String
+  OfficeEmail: String
+  OfficePhone: String
+  OfficeTitle: String
+  _children: QueryRef @deprecated(reason: "Use `_link` field instead")
+  _deleted: Bool
+  _fulltext(highlight: HighlightOptions): [String]
+  _id: String
+  _link(type: LinkTypes): QueryRef
+  _metadata: IContentMetadata
+  _modified: Date
+  _score: Float
+}
+
+type OfficeLocationAutocomplete {
+  _metadata: IContentMetadataAutocomplete
+}
+
+type OfficeLocationFacet {
+  _metadata: IContentMetadataFacet
+}
+
+input OfficeLocationOrderByInput {
+  _metadata: IContentMetadataOrderByInput
+  _minimumScore: Float
+  _modified: OrderBy
+  _ranking: Ranking
+  _semanticWeight: Float
+}
+
+type OfficeLocationOutput {
+  autocomplete: OfficeLocationAutocomplete
+  cursor: String
+  facets: OfficeLocationFacet
+  items: [OfficeLocation]
+  total(all: Boolean): Int
+}
+
+input OfficeLocationWhereInput {
+  _and: [OfficeLocationWhereInput]
+  _fulltext: SearchableStringFilterInput
+  _metadata: IContentMetadataWhereInput
+  _modified: DateFilterInput
+  _not: [OfficeLocationWhereInput]
+  _or: [OfficeLocationWhereInput]
 }
 
 enum OrderBy {
@@ -2397,6 +3109,55 @@ input PageSeoSettingsWhereInput {
   _or: [PageSeoSettingsWhereInput]
 }
 
+type PageSeoSettings_old implements IData & _IComponent & _IContent {
+  _children: QueryRef @deprecated(reason: "Use `_link` field instead")
+  _deleted: Bool
+  _fulltext(highlight: HighlightOptions): [String]
+  _id: String
+  _link(type: LinkTypes): QueryRef
+  _metadata: IContentMetadata
+  _modified: Date
+  _score: Float
+  metaTitle: String
+}
+
+type PageSeoSettings_oldAutocomplete {
+  _metadata: IContentMetadataAutocomplete
+}
+
+type PageSeoSettings_oldFacet {
+  _metadata: IContentMetadataFacet
+}
+
+input PageSeoSettings_oldOrderByInput {
+  _metadata: IContentMetadataOrderByInput
+  _minimumScore: Float
+  _modified: OrderBy
+  _ranking: Ranking
+  _semanticWeight: Float
+}
+
+type PageSeoSettings_oldOutput {
+  autocomplete: PageSeoSettings_oldAutocomplete
+  cursor: String
+  facets: PageSeoSettings_oldFacet
+  items: [PageSeoSettings_old]
+  total(all: Boolean): Int
+}
+
+type PageSeoSettings_oldProperty {
+  metaTitle: String
+}
+
+input PageSeoSettings_oldWhereInput {
+  _and: [PageSeoSettings_oldWhereInput]
+  _fulltext: SearchableStringFilterInput
+  _metadata: IContentMetadataWhereInput
+  _modified: DateFilterInput
+  _not: [PageSeoSettings_oldWhereInput]
+  _or: [PageSeoSettings_oldWhereInput]
+}
+
 type ParagraphElement implements IData & _IComponent & _IContent {
   _children: QueryRef @deprecated(reason: "Use `_link` field instead")
   _deleted: Bool
@@ -2448,12 +3209,16 @@ input ParagraphElementWhereInput {
 
 type Query {
   AnnouncementElement(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: AnnouncementElementOrderByInput, skip: Int! = 0, where: AnnouncementElementWhereInput): AnnouncementElementOutput
+  ArticleGroupPage(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: ArticleGroupPageOrderByInput, skip: Int! = 0, where: ArticleGroupPageWhereInput): ArticleGroupPageOutput
   ArticleListElement(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: ArticleListElementOrderByInput, skip: Int! = 0, where: ArticleListElementWhereInput): ArticleListElementOutput
+  ArticlePage(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: ArticlePageOrderByInput, skip: Int! = 0, where: ArticlePageWhereInput): ArticlePageOutput
+  BannerBlock(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: BannerBlockOrderByInput, skip: Int! = 0, where: BannerBlockWhereInput): BannerBlockOutput
   BlankExperience(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: BlankExperienceOrderByInput, skip: Int! = 0, where: BlankExperienceWhereInput): BlankExperienceOutput
   BlankSection(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: BlankSectionOrderByInput, skip: Int! = 0, where: BlankSectionWhereInput): BlankSectionOutput
   BlogListingBlock(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: BlogListingBlockOrderByInput, skip: Int! = 0, where: BlogListingBlockWhereInput): BlogListingBlockOutput
   BlogPostPage(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: BlogPostPageOrderByInput, skip: Int! = 0, where: BlogPostPageWhereInput): BlogPostPageOutput
   ButtonBlock(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: ButtonBlockOrderByInput, skip: Int! = 0, where: ButtonBlockWhereInput): ButtonBlockOutput
+  ButtonBlock_2(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: ButtonBlock_2OrderByInput, skip: Int! = 0, where: ButtonBlock_2WhereInput): ButtonBlock_2Output
   CTAElement(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: CTAElementOrderByInput, skip: Int! = 0, where: CTAElementWhereInput): CTAElementOutput
   CardBlock(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: CardBlockOrderByInput, skip: Int! = 0, where: CardBlockWhereInput): CardBlockOutput
   CardElement(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: CardElementOrderByInput, skip: Int! = 0, where: CardElementWhereInput): CardElementOutput
@@ -2465,33 +3230,46 @@ type Query {
   ContentRecsBlock(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: ContentRecsBlockOrderByInput, skip: Int! = 0, where: ContentRecsBlockWhereInput): ContentRecsBlockOutput
   ContentRecsElement(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: ContentRecsElementOrderByInput, skip: Int! = 0, where: ContentRecsElementWhereInput): ContentRecsElementOutput
   Data(cursor: String, ids: [String], limit: Int! = 20, locale: [system_Locales], orderBy: DataOrderByInput, skip: Int! = 0, where: DataWhereInput): DataOutput
+  DefaultImage(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: DefaultImageOrderByInput, skip: Int! = 0, where: DefaultImageWhereInput): DefaultImageOutput
+  DefaultVideo(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: DefaultVideoOrderByInput, skip: Int! = 0, where: DefaultVideoWhereInput): DefaultVideoOutput
+  Dictionary(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: DictionaryOrderByInput, skip: Int! = 0, where: DictionaryWhereInput): DictionaryOutput
+  DictionaryItem(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: DictionaryItemOrderByInput, skip: Int! = 0, where: DictionaryItemWhereInput): DictionaryItemOutput
   EventElement(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: EventElementOrderByInput, skip: Int! = 0, where: EventElementWhereInput): EventElementOutput
   FormElement(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: FormElementOrderByInput, skip: Int! = 0, where: FormElementWhereInput): FormElementOutput
   GenericMedia(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: GenericMediaOrderByInput, skip: Int! = 0, where: GenericMediaWhereInput): GenericMediaOutput
+  HeaderBlock(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: HeaderBlockOrderByInput, skip: Int! = 0, where: HeaderBlockWhereInput): HeaderBlockOutput
   HeadingElement(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: HeadingElementOrderByInput, skip: Int! = 0, where: HeadingElementWhereInput): HeadingElementOutput
   HeroBlock(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: HeroBlockOrderByInput, skip: Int! = 0, where: HeroBlockWhereInput): HeroBlockOutput
   HeroElement(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: HeroElementOrderByInput, skip: Int! = 0, where: HeroElementWhereInput): HeroElementOutput
   HomePageHeroBlock(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: HomePageHeroBlockOrderByInput, skip: Int! = 0, where: HomePageHeroBlockWhereInput): HomePageHeroBlockOutput
   HtmlBlock(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: HtmlBlockOrderByInput, skip: Int! = 0, where: HtmlBlockWhereInput): HtmlBlockOutput
+  Image(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: ImageOrderByInput, skip: Int! = 0, where: ImageWhereInput): ImageOutput
   ImageElement(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: ImageElementOrderByInput, skip: Int! = 0, where: ImageElementWhereInput): ImageElementOutput
   ImageMedia(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: ImageMediaOrderByInput, skip: Int! = 0, where: ImageMediaWhereInput): ImageMediaOutput
   LandingPage(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: LandingPageOrderByInput, skip: Int! = 0, where: LandingPageWhereInput): LandingPageOutput
   LayoutContainerBlock(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: LayoutContainerBlockOrderByInput, skip: Int! = 0, where: LayoutContainerBlockWhereInput): LayoutContainerBlockOutput
+  MagicButton(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: MagicButtonOrderByInput, skip: Int! = 0, where: MagicButtonWhereInput): MagicButtonOutput
   MegaMenuGroupBlock(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: MegaMenuGroupBlockOrderByInput, skip: Int! = 0, where: MegaMenuGroupBlockWhereInput): MegaMenuGroupBlockOutput
   MenuNavigationBlock(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: MenuNavigationBlockOrderByInput, skip: Int! = 0, where: MenuNavigationBlockWhereInput): MenuNavigationBlockOutput
+  NavigationMenuBlock(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: NavigationMenuBlockOrderByInput, skip: Int! = 0, where: NavigationMenuBlockWhereInput): NavigationMenuBlockOutput
   OdpEmbedBlock(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: OdpEmbedBlockOrderByInput, skip: Int! = 0, where: OdpEmbedBlockWhereInput): OdpEmbedBlockOutput
+  OfficeLocation(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: OfficeLocationOrderByInput, skip: Int! = 0, where: OfficeLocationWhereInput): OfficeLocationOutput
   PageSeoSettings(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: PageSeoSettingsOrderByInput, skip: Int! = 0, where: PageSeoSettingsWhereInput): PageSeoSettingsOutput
+  PageSeoSettings_old(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: PageSeoSettings_oldOrderByInput, skip: Int! = 0, where: PageSeoSettings_oldWhereInput): PageSeoSettings_oldOutput
   ParagraphElement(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: ParagraphElementOrderByInput, skip: Int! = 0, where: ParagraphElementWhereInput): ParagraphElementOutput
   QuoteBlock(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: QuoteBlockOrderByInput, skip: Int! = 0, where: QuoteBlockWhereInput): QuoteBlockOutput
+  SiteLogo(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: SiteLogoOrderByInput, skip: Int! = 0, where: SiteLogoWhereInput): SiteLogoOutput
   StandardPage(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: StandardPageOrderByInput, skip: Int! = 0, where: StandardPageWhereInput): StandardPageOutput
   StartPage(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: StartPageOrderByInput, skip: Int! = 0, where: StartPageWhereInput): StartPageOutput
   SysContentFolder(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: SysContentFolderOrderByInput, skip: Int! = 0, where: SysContentFolderWhereInput): SysContentFolderOutput
   TeamElement(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: TeamElementOrderByInput, skip: Int! = 0, where: TeamElementWhereInput): TeamElementOutput
+  TestExperience(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: TestExperienceOrderByInput, skip: Int! = 0, where: TestExperienceWhereInput): TestExperienceOutput
   TestimonialElement(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: TestimonialElementOrderByInput, skip: Int! = 0, where: TestimonialElementWhereInput): TestimonialElementOutput
   TextBlock(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: TextBlockOrderByInput, skip: Int! = 0, where: TextBlockWhereInput): TextBlockOutput
   Video(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: VideoOrderByInput, skip: Int! = 0, where: VideoWhereInput): VideoOutput
   VideoElement(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: VideoElementOrderByInput, skip: Int! = 0, where: VideoElementWhereInput): VideoElementOutput
   VideoMedia(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: VideoMediaOrderByInput, skip: Int! = 0, where: VideoMediaWhereInput): VideoMediaOutput
+  WebsiteFooter(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: WebsiteFooterOrderByInput, skip: Int! = 0, where: WebsiteFooterWhereInput): WebsiteFooterOutput
   _Component(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: _ComponentOrderByInput, skip: Int! = 0, where: _ComponentWhereInput): _ComponentOutput
   _Content(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: _ContentOrderByInput, skip: Int! = 0, where: _ContentWhereInput): _ContentOutput
   _Experience(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: _ExperienceOrderByInput, skip: Int! = 0, where: _ExperienceWhereInput): _ExperienceOutput
@@ -2501,17 +3279,22 @@ type Query {
   _Page(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: _PageOrderByInput, skip: Int! = 0, where: _PageWhereInput): _PageOutput
   _Section(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: _SectionOrderByInput, skip: Int! = 0, where: _SectionWhereInput): _SectionOutput
   _Video(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: _VideoOrderByInput, skip: Int! = 0, where: _VideoWhereInput): _VideoOutput
+  summer_hero_banner(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: summer_hero_bannerOrderByInput, skip: Int! = 0, where: summer_hero_bannerWhereInput): summer_hero_bannerOutput
 }
 
 """"""
 type QueryRef {
   AnnouncementElement(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: AnnouncementElementOrderByInput, skip: Int! = 0, where: AnnouncementElementWhereInput): AnnouncementElementOutput
+  ArticleGroupPage(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: ArticleGroupPageOrderByInput, skip: Int! = 0, where: ArticleGroupPageWhereInput): ArticleGroupPageOutput
   ArticleListElement(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: ArticleListElementOrderByInput, skip: Int! = 0, where: ArticleListElementWhereInput): ArticleListElementOutput
+  ArticlePage(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: ArticlePageOrderByInput, skip: Int! = 0, where: ArticlePageWhereInput): ArticlePageOutput
+  BannerBlock(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: BannerBlockOrderByInput, skip: Int! = 0, where: BannerBlockWhereInput): BannerBlockOutput
   BlankExperience(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: BlankExperienceOrderByInput, skip: Int! = 0, where: BlankExperienceWhereInput): BlankExperienceOutput
   BlankSection(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: BlankSectionOrderByInput, skip: Int! = 0, where: BlankSectionWhereInput): BlankSectionOutput
   BlogListingBlock(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: BlogListingBlockOrderByInput, skip: Int! = 0, where: BlogListingBlockWhereInput): BlogListingBlockOutput
   BlogPostPage(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: BlogPostPageOrderByInput, skip: Int! = 0, where: BlogPostPageWhereInput): BlogPostPageOutput
   ButtonBlock(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: ButtonBlockOrderByInput, skip: Int! = 0, where: ButtonBlockWhereInput): ButtonBlockOutput
+  ButtonBlock_2(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: ButtonBlock_2OrderByInput, skip: Int! = 0, where: ButtonBlock_2WhereInput): ButtonBlock_2Output
   CTAElement(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: CTAElementOrderByInput, skip: Int! = 0, where: CTAElementWhereInput): CTAElementOutput
   CardBlock(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: CardBlockOrderByInput, skip: Int! = 0, where: CardBlockWhereInput): CardBlockOutput
   CardElement(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: CardElementOrderByInput, skip: Int! = 0, where: CardElementWhereInput): CardElementOutput
@@ -2523,33 +3306,46 @@ type QueryRef {
   ContentRecsBlock(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: ContentRecsBlockOrderByInput, skip: Int! = 0, where: ContentRecsBlockWhereInput): ContentRecsBlockOutput
   ContentRecsElement(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: ContentRecsElementOrderByInput, skip: Int! = 0, where: ContentRecsElementWhereInput): ContentRecsElementOutput
   Data(cursor: String, ids: [String], limit: Int! = 20, locale: [system_Locales], orderBy: DataOrderByInput, skip: Int! = 0, where: DataWhereInput): DataOutput
+  DefaultImage(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: DefaultImageOrderByInput, skip: Int! = 0, where: DefaultImageWhereInput): DefaultImageOutput
+  DefaultVideo(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: DefaultVideoOrderByInput, skip: Int! = 0, where: DefaultVideoWhereInput): DefaultVideoOutput
+  Dictionary(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: DictionaryOrderByInput, skip: Int! = 0, where: DictionaryWhereInput): DictionaryOutput
+  DictionaryItem(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: DictionaryItemOrderByInput, skip: Int! = 0, where: DictionaryItemWhereInput): DictionaryItemOutput
   EventElement(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: EventElementOrderByInput, skip: Int! = 0, where: EventElementWhereInput): EventElementOutput
   FormElement(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: FormElementOrderByInput, skip: Int! = 0, where: FormElementWhereInput): FormElementOutput
   GenericMedia(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: GenericMediaOrderByInput, skip: Int! = 0, where: GenericMediaWhereInput): GenericMediaOutput
+  HeaderBlock(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: HeaderBlockOrderByInput, skip: Int! = 0, where: HeaderBlockWhereInput): HeaderBlockOutput
   HeadingElement(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: HeadingElementOrderByInput, skip: Int! = 0, where: HeadingElementWhereInput): HeadingElementOutput
   HeroBlock(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: HeroBlockOrderByInput, skip: Int! = 0, where: HeroBlockWhereInput): HeroBlockOutput
   HeroElement(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: HeroElementOrderByInput, skip: Int! = 0, where: HeroElementWhereInput): HeroElementOutput
   HomePageHeroBlock(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: HomePageHeroBlockOrderByInput, skip: Int! = 0, where: HomePageHeroBlockWhereInput): HomePageHeroBlockOutput
   HtmlBlock(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: HtmlBlockOrderByInput, skip: Int! = 0, where: HtmlBlockWhereInput): HtmlBlockOutput
+  Image(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: ImageOrderByInput, skip: Int! = 0, where: ImageWhereInput): ImageOutput
   ImageElement(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: ImageElementOrderByInput, skip: Int! = 0, where: ImageElementWhereInput): ImageElementOutput
   ImageMedia(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: ImageMediaOrderByInput, skip: Int! = 0, where: ImageMediaWhereInput): ImageMediaOutput
   LandingPage(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: LandingPageOrderByInput, skip: Int! = 0, where: LandingPageWhereInput): LandingPageOutput
   LayoutContainerBlock(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: LayoutContainerBlockOrderByInput, skip: Int! = 0, where: LayoutContainerBlockWhereInput): LayoutContainerBlockOutput
+  MagicButton(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: MagicButtonOrderByInput, skip: Int! = 0, where: MagicButtonWhereInput): MagicButtonOutput
   MegaMenuGroupBlock(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: MegaMenuGroupBlockOrderByInput, skip: Int! = 0, where: MegaMenuGroupBlockWhereInput): MegaMenuGroupBlockOutput
   MenuNavigationBlock(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: MenuNavigationBlockOrderByInput, skip: Int! = 0, where: MenuNavigationBlockWhereInput): MenuNavigationBlockOutput
+  NavigationMenuBlock(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: NavigationMenuBlockOrderByInput, skip: Int! = 0, where: NavigationMenuBlockWhereInput): NavigationMenuBlockOutput
   OdpEmbedBlock(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: OdpEmbedBlockOrderByInput, skip: Int! = 0, where: OdpEmbedBlockWhereInput): OdpEmbedBlockOutput
+  OfficeLocation(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: OfficeLocationOrderByInput, skip: Int! = 0, where: OfficeLocationWhereInput): OfficeLocationOutput
   PageSeoSettings(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: PageSeoSettingsOrderByInput, skip: Int! = 0, where: PageSeoSettingsWhereInput): PageSeoSettingsOutput
+  PageSeoSettings_old(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: PageSeoSettings_oldOrderByInput, skip: Int! = 0, where: PageSeoSettings_oldWhereInput): PageSeoSettings_oldOutput
   ParagraphElement(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: ParagraphElementOrderByInput, skip: Int! = 0, where: ParagraphElementWhereInput): ParagraphElementOutput
   QuoteBlock(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: QuoteBlockOrderByInput, skip: Int! = 0, where: QuoteBlockWhereInput): QuoteBlockOutput
+  SiteLogo(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: SiteLogoOrderByInput, skip: Int! = 0, where: SiteLogoWhereInput): SiteLogoOutput
   StandardPage(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: StandardPageOrderByInput, skip: Int! = 0, where: StandardPageWhereInput): StandardPageOutput
   StartPage(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: StartPageOrderByInput, skip: Int! = 0, where: StartPageWhereInput): StartPageOutput
   SysContentFolder(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: SysContentFolderOrderByInput, skip: Int! = 0, where: SysContentFolderWhereInput): SysContentFolderOutput
   TeamElement(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: TeamElementOrderByInput, skip: Int! = 0, where: TeamElementWhereInput): TeamElementOutput
+  TestExperience(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: TestExperienceOrderByInput, skip: Int! = 0, where: TestExperienceWhereInput): TestExperienceOutput
   TestimonialElement(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: TestimonialElementOrderByInput, skip: Int! = 0, where: TestimonialElementWhereInput): TestimonialElementOutput
   TextBlock(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: TextBlockOrderByInput, skip: Int! = 0, where: TextBlockWhereInput): TextBlockOutput
   Video(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: VideoOrderByInput, skip: Int! = 0, where: VideoWhereInput): VideoOutput
   VideoElement(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: VideoElementOrderByInput, skip: Int! = 0, where: VideoElementWhereInput): VideoElementOutput
   VideoMedia(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: VideoMediaOrderByInput, skip: Int! = 0, where: VideoMediaWhereInput): VideoMediaOutput
+  WebsiteFooter(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: WebsiteFooterOrderByInput, skip: Int! = 0, where: WebsiteFooterWhereInput): WebsiteFooterOutput
   _Component(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: _ComponentOrderByInput, skip: Int! = 0, where: _ComponentWhereInput): _ComponentOutput
   _Content(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: _ContentOrderByInput, skip: Int! = 0, where: _ContentWhereInput): _ContentOutput
   _Experience(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: _ExperienceOrderByInput, skip: Int! = 0, where: _ExperienceWhereInput): _ExperienceOutput
@@ -2559,6 +3355,7 @@ type QueryRef {
   _Page(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: _PageOrderByInput, skip: Int! = 0, where: _PageWhereInput): _PageOutput
   _Section(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: _SectionOrderByInput, skip: Int! = 0, where: _SectionWhereInput): _SectionOutput
   _Video(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: _VideoOrderByInput, skip: Int! = 0, where: _VideoWhereInput): _VideoOutput
+  summer_hero_banner(cursor: String, ids: [String], limit: Int! = 20, locale: [Locales], orderBy: summer_hero_bannerOrderByInput, skip: Int! = 0, where: summer_hero_bannerWhereInput): summer_hero_bannerOutput
 }
 
 type QuoteBlock implements IData & _IComponent & _IContent {
@@ -2699,6 +3496,55 @@ input SearchableStringFilterInput {
   synonyms: [SynonymSlot]
 }
 
+type SiteLogo implements IData & _IComponent & _IContent {
+  HeaderLogo: ContentReference
+  _children: QueryRef @deprecated(reason: "Use `_link` field instead")
+  _deleted: Bool
+  _fulltext(highlight: HighlightOptions): [String]
+  _id: String
+  _link(type: LinkTypes): QueryRef
+  _metadata: IContentMetadata
+  _modified: Date
+  _score: Float
+}
+
+type SiteLogoAutocomplete {
+  HeaderLogo: ContentReferenceAutocomplete
+  _metadata: IContentMetadataAutocomplete
+}
+
+type SiteLogoFacet {
+  HeaderLogo: ContentReferenceFacet
+  _metadata: IContentMetadataFacet
+}
+
+input SiteLogoOrderByInput {
+  HeaderLogo: ContentReferenceOrderByInput
+  _metadata: IContentMetadataOrderByInput
+  _minimumScore: Float
+  _modified: OrderBy
+  _ranking: Ranking
+  _semanticWeight: Float
+}
+
+type SiteLogoOutput {
+  autocomplete: SiteLogoAutocomplete
+  cursor: String
+  facets: SiteLogoFacet
+  items: [SiteLogo]
+  total(all: Boolean): Int
+}
+
+input SiteLogoWhereInput {
+  HeaderLogo: ContentReferenceWhereInput
+  _and: [SiteLogoWhereInput]
+  _fulltext: SearchableStringFilterInput
+  _metadata: IContentMetadataWhereInput
+  _modified: DateFilterInput
+  _not: [SiteLogoWhereInput]
+  _or: [SiteLogoWhereInput]
+}
+
 type StandardPage implements IData & _IContent & _IPage {
   MainBody: RichText
   SeoSettings: PageSeoSettingsProperty
@@ -2764,6 +3610,7 @@ type StartPage implements IData & _IContent & _IPage {
   FooterNavigationContentArea: [_IContent]
   FooterNavigationCopyrightText: String
   FooterNavigationSubLinks: [Link]
+  HeaderLogo: ContentReference
   HomePageHeroContentArea: [_IContent]
   HomePageMainContentArea: [_IContent]
   MainNavigationContentArea: [_IContent]
@@ -2783,6 +3630,7 @@ type StartPage implements IData & _IContent & _IPage {
 type StartPageAutocomplete {
   FooterNavigationContentArea: _IContentAutocomplete
   FooterNavigationSubLinks: LinkAutocomplete
+  HeaderLogo: ContentReferenceAutocomplete
   HomePageHeroContentArea: _IContentAutocomplete
   HomePageMainContentArea: _IContentAutocomplete
   MainNavigationContentArea: _IContentAutocomplete
@@ -2795,6 +3643,7 @@ type StartPageAutocomplete {
 type StartPageFacet {
   FooterNavigationContentArea: _IContentFacet
   FooterNavigationSubLinks: LinkFacet
+  HeaderLogo: ContentReferenceFacet
   HomePageHeroContentArea: _IContentFacet
   HomePageMainContentArea: _IContentFacet
   MainNavigationContentArea: _IContentFacet
@@ -2807,6 +3656,7 @@ type StartPageFacet {
 input StartPageOrderByInput {
   FooterNavigationContentArea: _IContentOrderByInput
   FooterNavigationSubLinks: LinkOrderByInput
+  HeaderLogo: ContentReferenceOrderByInput
   HomePageHeroContentArea: _IContentOrderByInput
   HomePageMainContentArea: _IContentOrderByInput
   MainNavigationContentArea: _IContentOrderByInput
@@ -2831,6 +3681,7 @@ type StartPageOutput {
 input StartPageWhereInput {
   FooterNavigationContentArea: _IContentWhereInput
   FooterNavigationSubLinks: LinkWhereInput
+  HeaderLogo: ContentReferenceWhereInput
   HomePageHeroContentArea: _IContentWhereInput
   HomePageMainContentArea: _IContentWhereInput
   MainNavigationContentArea: _IContentWhereInput
@@ -3002,6 +3853,51 @@ input TeamElementWhereInput {
   _modified: DateFilterInput
   _not: [TeamElementWhereInput]
   _or: [TeamElementWhereInput]
+}
+
+type TestExperience implements IData & _IComponent & _IContent {
+  Dropdown: String
+  _children: QueryRef @deprecated(reason: "Use `_link` field instead")
+  _deleted: Bool
+  _fulltext(highlight: HighlightOptions): [String]
+  _id: String
+  _link(type: LinkTypes): QueryRef
+  _metadata: IContentMetadata
+  _modified: Date
+  _score: Float
+}
+
+type TestExperienceAutocomplete {
+  _metadata: IContentMetadataAutocomplete
+}
+
+type TestExperienceFacet {
+  _metadata: IContentMetadataFacet
+}
+
+input TestExperienceOrderByInput {
+  _metadata: IContentMetadataOrderByInput
+  _minimumScore: Float
+  _modified: OrderBy
+  _ranking: Ranking
+  _semanticWeight: Float
+}
+
+type TestExperienceOutput {
+  autocomplete: TestExperienceAutocomplete
+  cursor: String
+  facets: TestExperienceFacet
+  items: [TestExperience]
+  total(all: Boolean): Int
+}
+
+input TestExperienceWhereInput {
+  _and: [TestExperienceWhereInput]
+  _fulltext: SearchableStringFilterInput
+  _metadata: IContentMetadataWhereInput
+  _modified: DateFilterInput
+  _not: [TestExperienceWhereInput]
+  _or: [TestExperienceWhereInput]
 }
 
 type TestimonialElement implements IData & _IComponent & _IContent {
@@ -3257,6 +4153,81 @@ input VideoWhereInput {
   _modified: DateFilterInput
   _not: [VideoWhereInput]
   _or: [VideoWhereInput]
+}
+
+type WebsiteFooter implements IData & _IComponent & _IContent {
+  FooterFirstLinkList: NavigationMenuBlockProperty
+  FooterLegalLinks: [Link]
+  FooterLogo: ContentReference
+  FooterLogoAltText: String
+  FooterMainOfficeLocation: [_IContent]
+  FooterSecondLinkList: NavigationMenuBlockProperty
+  FooterThirdLinkList: NavigationMenuBlockProperty
+  _children: QueryRef @deprecated(reason: "Use `_link` field instead")
+  _deleted: Bool
+  _fulltext(highlight: HighlightOptions): [String]
+  _id: String
+  _link(type: LinkTypes): QueryRef
+  _metadata: IContentMetadata
+  _modified: Date
+  _score: Float
+}
+
+type WebsiteFooterAutocomplete {
+  FooterFirstLinkList: NavigationMenuBlockPropertyAutocomplete
+  FooterLegalLinks: LinkAutocomplete
+  FooterLogo: ContentReferenceAutocomplete
+  FooterMainOfficeLocation: _IContentAutocomplete
+  FooterSecondLinkList: NavigationMenuBlockPropertyAutocomplete
+  FooterThirdLinkList: NavigationMenuBlockPropertyAutocomplete
+  _metadata: IContentMetadataAutocomplete
+}
+
+type WebsiteFooterFacet {
+  FooterFirstLinkList: NavigationMenuBlockPropertyFacet
+  FooterLegalLinks: LinkFacet
+  FooterLogo: ContentReferenceFacet
+  FooterMainOfficeLocation: _IContentFacet
+  FooterSecondLinkList: NavigationMenuBlockPropertyFacet
+  FooterThirdLinkList: NavigationMenuBlockPropertyFacet
+  _metadata: IContentMetadataFacet
+}
+
+input WebsiteFooterOrderByInput {
+  FooterFirstLinkList: NavigationMenuBlockPropertyOrderByInput
+  FooterLegalLinks: LinkOrderByInput
+  FooterLogo: ContentReferenceOrderByInput
+  FooterMainOfficeLocation: _IContentOrderByInput
+  FooterSecondLinkList: NavigationMenuBlockPropertyOrderByInput
+  FooterThirdLinkList: NavigationMenuBlockPropertyOrderByInput
+  _metadata: IContentMetadataOrderByInput
+  _minimumScore: Float
+  _modified: OrderBy
+  _ranking: Ranking
+  _semanticWeight: Float
+}
+
+type WebsiteFooterOutput {
+  autocomplete: WebsiteFooterAutocomplete
+  cursor: String
+  facets: WebsiteFooterFacet
+  items: [WebsiteFooter]
+  total(all: Boolean): Int
+}
+
+input WebsiteFooterWhereInput {
+  FooterFirstLinkList: NavigationMenuBlockPropertyWhereInput
+  FooterLegalLinks: LinkWhereInput
+  FooterLogo: ContentReferenceWhereInput
+  FooterMainOfficeLocation: _IContentWhereInput
+  FooterSecondLinkList: NavigationMenuBlockPropertyWhereInput
+  FooterThirdLinkList: NavigationMenuBlockPropertyWhereInput
+  _and: [WebsiteFooterWhereInput]
+  _fulltext: SearchableStringFilterInput
+  _metadata: IContentMetadataWhereInput
+  _modified: DateFilterInput
+  _not: [WebsiteFooterWhereInput]
+  _or: [WebsiteFooterWhereInput]
 }
 
 type _Component implements IData & _IComponent & _IContent {
@@ -3789,6 +4760,50 @@ input _VideoWhereInput {
   _modified: DateFilterInput
   _not: [_VideoWhereInput]
   _or: [_VideoWhereInput]
+}
+
+type summer_hero_banner implements IData & _IComponent & _IContent {
+  _children: QueryRef @deprecated(reason: "Use `_link` field instead")
+  _deleted: Bool
+  _fulltext(highlight: HighlightOptions): [String]
+  _id: String
+  _link(type: LinkTypes): QueryRef
+  _metadata: IContentMetadata
+  _modified: Date
+  _score: Float
+}
+
+type summer_hero_bannerAutocomplete {
+  _metadata: IContentMetadataAutocomplete
+}
+
+type summer_hero_bannerFacet {
+  _metadata: IContentMetadataFacet
+}
+
+input summer_hero_bannerOrderByInput {
+  _metadata: IContentMetadataOrderByInput
+  _minimumScore: Float
+  _modified: OrderBy
+  _ranking: Ranking
+  _semanticWeight: Float
+}
+
+type summer_hero_bannerOutput {
+  autocomplete: summer_hero_bannerAutocomplete
+  cursor: String
+  facets: summer_hero_bannerFacet
+  items: [summer_hero_banner]
+  total(all: Boolean): Int
+}
+
+input summer_hero_bannerWhereInput {
+  _and: [summer_hero_bannerWhereInput]
+  _fulltext: SearchableStringFilterInput
+  _metadata: IContentMetadataWhereInput
+  _modified: DateFilterInput
+  _not: [summer_hero_bannerWhereInput]
+  _or: [summer_hero_bannerWhereInput]
 }
 
 enum system_Locales {
