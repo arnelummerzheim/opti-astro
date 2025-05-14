@@ -1,0 +1,21 @@
+---
+import type {
+    DisplaySettingsFragment,
+    GridFragment,
+} from '../../../../__generated/sdk';
+import type { ContentPayload } from '../../../graphql/shared/ContentPayload';
+import GridBento from './GridBento.astro';
+import GridStandard from './GridStandard.astro';
+
+export interface Props {
+    data: GridFragment;
+    displaySettings: DisplaySettingsFragment[];
+    displayTemplateKey: string;
+    contentPayload: ContentPayload;
+}
+const { displayTemplateKey } = Astro.props as Props;
+const isBento = displayTemplateKey === 'GridBentoStyles';
+---
+
+{!isBento && <GridStandard {...Astro.props} />}
+{isBento && <GridBento {...Astro.props} />}

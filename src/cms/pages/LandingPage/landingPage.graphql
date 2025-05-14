@@ -1,0 +1,17 @@
+fragment LandingPage on LandingPage {
+    TopContentArea {
+        _metadata {
+            types
+        }
+        ...ContentArea
+    }
+    MainContentArea {
+        _metadata {
+            types
+        }
+        ...ContentArea
+    }
+    SeoSettings {
+        ...PageSeoSettingsProperty
+    }
+}
