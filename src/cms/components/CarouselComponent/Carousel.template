@@ -41,18 +41,16 @@ const itemCount = carouselData.length;
                                 data.Assets[data.Assets.length - 1]?.url
                                     ?.default
                             }
-                            alt=""
+                            alt="todo"
                             class="h-full w-full object-cover"
                         />
-                            {showCaptions && (
-                                <!-- ① Wrapper: von bottom-0 zu inset-0 + Flex-Zentrierung -->
-                                <div class="absolute inset-0 flex items-center justify-center bg-black/10 p-2 text-white md:p-4 text-8xl">
-                                    <!-- ② Heading: h3 -> h1 + größere Schrift -->
-                                    <p class="text-8xl">
-                                        {data.Assets[data.Assets.length - 1]?.title ?? ''}
-                                    </p>
-                                </div>
-                          )}
+                        {showCaptions && (
+                            <div class="absolute inset-x-0 bottom-0 bg-black/50 p-2 text-white md:p-4">
+                                <h3 class="text-base font-semibold md:text-lg">
+                                    #todo
+                                </h3>
+                            </div>
+                        )}
                     </div>
                 </div>
             )
@@ -69,14 +67,12 @@ const itemCount = carouselData.length;
                             class="h-full w-full object-cover"
                         />
                         {showCaptions && (
-      <!-- ① Wrapper: von bottom-0 zu inset-0 + Flex-Zentrierung -->
-      <div class="absolute inset-0 flex items-center justify-center bg-black/10 p-2 text-white md:p-4 text-8xl">
-        <!-- ② Heading: h3 -> h1 + größere Schrift -->
-        <p class="text-8xl">
-            {item?.title ?? ''}
-        </p>
-      </div>
-    )}
+                            <div class="absolute inset-x-0 bottom-0 bg-black/50 p-2 text-white md:p-4">
+                                <h3 class="text-base font-semibold md:text-lg">
+                                    #todo
+                                </h3>
+                            </div>
+                        )}
                     </div>
                 </div>
             ))
@@ -93,14 +89,12 @@ const itemCount = carouselData.length;
                             class="h-full w-full object-cover"
                         />
                         {showCaptions && (
-      <!-- ① Wrapper: von bottom-0 zu inset-0 + Flex-Zentrierung -->
-      <div class="absolute inset-0 flex items-center justify-center bg-black/10 p-2 text-white md:p-4 text-8xl">
-        <!-- ② Heading: h3 -> h1 + größere Schrift -->
-        <p class="text-8xl">
-            {data.Assets[0]?.title ?? ''}
-        </p>
-      </div>
-    )}
+                            <div class="absolute inset-x-0 bottom-0 bg-black/50 p-2 text-white md:p-4">
+                                <h3 class="text-base font-semibold md:text-lg">
+                                    #todo
+                                </h3>
+                            </div>
+                        )}
                     </div>
                 </div>
             )

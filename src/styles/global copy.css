@@ -10,7 +10,12 @@
 }
 
 @layer base {
-   
+    h1.carousel-caption {
+        /* Deine Wunschgröße dauerhaft – hier extrem groß als Beispiel */
+        font-size: clamp(3rem, 8vw + 1rem, 11rem);
+        line-height: 1.1;
+        font-weight: 800;
+      }
     ul {
         @apply list-inside list-disc;
     }

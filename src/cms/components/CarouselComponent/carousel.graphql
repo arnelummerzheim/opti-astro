@@ -1,7 +1,8 @@
 fragment Carousel on Carousel {
-    Assets {
-        url {
-            default
-        }
+  Assets {
+    title           # Caption
+    url {
+      default       # Bild-URL
     }
+  }
 }

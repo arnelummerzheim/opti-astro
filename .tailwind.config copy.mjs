@@ -1,4 +1,3 @@
-
 /** @type {import('tailwindcss').Config} */
 export default {
     content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
@@ -8,7 +7,7 @@ export default {
         function ({ addBase }) {
             addBase({
                 h1: {
-                  /*  fontSize: '2.25rem', // text-3xl */
+                    fontSize: '2.25rem', // text-3xl
                 },
                 h2: {
                     fontSize: '1.875rem', // text-2xl
