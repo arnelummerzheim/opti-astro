@@ -1,11 +1,52 @@
 import type { CodegenConfig } from '@graphql-codegen/cli';
-import { loadEnv } from 'vite';
+import { glob } from 'glob';
+import * as fs from 'fs';
+import * as path from 'path';
 
-const { OPTIMIZELY_GRAPH_SINGLE_KEY, OPTIMIZELY_GRAPH_GATEWAY } = loadEnv(
-    process.env.NODE_ENV || 'development',
-    process.cwd(),
-    ''
-);
+// import { loadEnv } from 'vite';
+// const { OPTIMIZELY_GRAPH_SINGLE_KEY, OPTIMIZELY_GRAPH_GATEWAY } = loadEnv(
+//     process.env.NODE_ENV || 'development',
+//     process.cwd(),
+//     ''
+// );
+
+import 'dotenv/config';
+
+const OPTIMIZELY_GRAPH_GATEWAY=process.env.OPTIMIZELY_GRAPH_GATEWAY;
+const OPTIMIZELY_GRAPH_SINGLE_KEY=process.env.OPTIMIZELY_GRAPH_SINGLE_KEY;
+const OPTIMIZELY_DAM_ENABLED = process.env.OPTIMIZELY_DAM_ENABLED === 'true';
+
+// Build document array dynamically to avoid conflicts
+function buildDocumentArray() {
+    const graphqlFilePath = ['./src/graphql/**/*.graphql'];
+    const graphqlFiles = glob.sync(graphqlFilePath);
+    
+    if (OPTIMIZELY_DAM_ENABLED) {
+        // When DAM is enabled, prefer .dam.graphql files over regular ones
+        const allCmsFiles = glob.sync('./src/cms/**/*.graphql');
+        const allGraphqlFiles = [...graphqlFiles, ...allCmsFiles];
+        const damFiles = allGraphqlFiles.filter(file => file.endsWith('.dam.graphql'));
+        const regularFiles = allGraphqlFiles.filter(file => !file.endsWith('.dam.graphql'));
+        
+        // For each regular file, check if a DAM version exists
+        const finalFiles = regularFiles.filter(regularFile => {
+            const damVersion = regularFile.replace('.graphql', '.dam.graphql');
+            return !damFiles.includes(damVersion);
+        });
+
+        return [...damFiles, ...finalFiles];
+    } else {
+        // When DAM is disabled, exclude all .dam.graphql files
+        return [
+            ...graphqlFilePath,
+            '!./src/graphql/**/*.dam.graphql',
+            './src/cms/**/*.graphql',
+            '!./src/cms/**/*.dam.graphql'
+        ];
+    }
+}
+
+const allDocuments = buildDocumentArray();
 
 const config: CodegenConfig = {
     overwrite: true,
@@ -18,7 +59,7 @@ const config: CodegenConfig = {
             plugins: ['schema-ast'],
         },
         './__generated/sdk.ts': {
-            documents: ['./src/cms/**/*.graphql', './src/graphql/**/*.graphql'],
+            documents: allDocuments,
             plugins: [
                 'typescript',
                 'typescript-operations',

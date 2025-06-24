@@ -34,6 +34,13 @@ utils/**/temp/
 
 
 .yarn/*
+!.yarn/releases/
 .netlify/*
+.vercel/*
 
 .pnp.*
+
+bun.*
+
+.mcp.json
+CLAUDE.md

@@ -1,7 +1,8 @@
 fragment Video on Video {
     Video {
-        url {
-            default
-        }
+        ...ContentUrl
+    }
+    VideoPosterImage {
+        ...ContentUrl
     }
 }

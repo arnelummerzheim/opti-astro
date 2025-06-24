@@ -1,4 +1,0 @@
-fragment ArticleList on ArticleList {
-    Title
-    NumberOfArticles
-}

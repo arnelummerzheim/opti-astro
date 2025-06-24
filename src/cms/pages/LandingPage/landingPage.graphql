@@ -1,4 +1,8 @@
 fragment LandingPage on LandingPage {
+    _metadata {
+        ...PageUrl
+        published
+    }
     TopContentArea {
         _metadata {
             types

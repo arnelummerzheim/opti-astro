@@ -1,10 +1,12 @@
 ---
+import { Image as AstroImage } from 'astro:assets';
 import type {
     DisplaySettingsFragment,
     HeroFragment,
 } from '../../../../__generated/sdk';
 import type { ContentPayload } from '../../../graphql/shared/ContentPayload';
 import { getHeroStyles } from './HeroStyling';
+import { getGlobalStyles } from '../../shared/globalStylesHelper';
 
 export interface Props {
     data: HeroFragment;
@@ -12,16 +14,22 @@ export interface Props {
     contentPayload: ContentPayload;
 }
 const { data, displaySettings } = Astro.props as Props;
-const videoUrl = data?.Video?.url?.default ?? null;
-const imageUrl = data?.Image?.url?.default || null;
+
+const imageUrl = (data?.Image as any)?.item?.Url || data?.Image?.url?.default || null;
+const imageAltText = (data.Image as any)?.item?.AltText || (data.Image as any)?.item?._metadata?.displayName || data.Heading || '';
+
+const videoUrl = (data?.Video as any)?.item?.Url || data?.Video?.url?.default || null;
 const hasVideo = videoUrl !== null;
-const { justifyClass, backgroundOpacityClass, textClasses, heightClass } =
+
+const { justifyClass, backgroundOpacityClass, textClasses, heightClass, imageFitClass } =
     getHeroStyles(displaySettings);
+const globalStyles = getGlobalStyles(displaySettings);
 ---
 
 <section
     class="relative flex w-full items-center"
-    class:list={[justifyClass, heightClass]}
+    class:list={[justifyClass, heightClass, globalStyles]}
+    
 >
     {
         hasVideo && videoUrl && (
@@ -41,11 +49,12 @@ const { justifyClass, backgroundOpacityClass, textClasses, heightClass } =
 
     {
         !hasVideo && imageUrl && (
-            <img
+            <AstroImage
                 src={imageUrl}
-                alt="Hero Background"
-                class="absolute inset-0 h-full w-full object-cover"
+                alt={imageAltText}
+                class={`absolute inset-0 h-full w-full ${imageFitClass}`}
                 id="hero-image"
+                inferSize={true}
             />
         )
     }
@@ -56,11 +65,11 @@ const { justifyClass, backgroundOpacityClass, textClasses, heightClass } =
     <!-- Content -->
     <div class="relative z-10 px-6" class:list={textClasses}>
         <h1 class="text-5xl font-bold md:text-6xl">{data?.Heading}</h1>
-        <p class="mx-auto mt-4 max-w-2xl text-lg">
+        <p class="mx-auto mt-4 text-xl">
             {data?.SubHeading}
         </p>
         <p
-            class="mx-auto mt-4 max-w-2xl text-base text-gray-200"
+            class="mx-auto mt-4 max-w-2xl text-base text-base-content opacity-80"
             set:html={data.Body?.html}
         />
 
@@ -70,7 +79,7 @@ const { justifyClass, backgroundOpacityClass, textClasses, heightClass } =
                 data?.Links?.map((link) => (
                     <a
                         href={link?.url?.default}
-                        class="rounded-full bg-black/90 px-6 py-3 font-semibold text-white shadow-lg hover:bg-blue-700"
+                        class="btn btn-neutral btn-lg"
                     >
                         {link?.text}
                     </a>

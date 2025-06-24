@@ -1,275 +1,238 @@
 ---
+import { Image } from 'astro:assets';
 import type {
     CarouselFragment,
     DisplaySettingsFragment,
 } from '../../../../__generated/sdk';
 import type { ContentPayload } from '../../../graphql/shared/ContentPayload';
+import { getCarouselStyleConfig, getCarouselMode } from './CarouselStyling';
 
 export interface Props {
     data: CarouselFragment;
     displaySettings: DisplaySettingsFragment[];
+    displayTemplateKey?: string;
     contentPayload: ContentPayload;
 }
-const { data, displaySettings, contentPayload } = Astro.props as Props;
+const { data, displaySettings, displayTemplateKey = 'DefaultCarousel', contentPayload } = Astro.props as Props;
 
-// Configuration options
-const showChevrons = true;
-const showIndicators = true;
-const showCaptions = true;
+// Determine carousel mode from settings or template key
+const carouselMode = getCarouselMode(displaySettings, displayTemplateKey);
+const isContentCarousel = carouselMode === 'content';
+
+// Get all styling configuration
+const styleConfig = getCarouselStyleConfig(displaySettings, displayTemplateKey);
+
 const carouselData = data?.Assets || [];
 const itemCount = carouselData.length;
+
+// Create a unique ID for this specific carousel instance
+const carouselId = `carousel-${Math.random().toString(36).substring(2, 9)}`;
 ---
 
-<div
-    x-data=`infiniteCarousel(${itemCount})`
-    class="relative h-full w-full overflow-hidden rounded-lg"
->
-    <!-- Carousel items container -->
-    <div
-        class="flex h-full transition-transform duration-500 ease-in-out"
-        x-ref="carouselContainer"
-        x-bind:style="containerStyle"
-        @transitionend="handleTransitionEnd"
+<div class={`carousel-container ${styleConfig.carouselAlignment}`}>
+    {/* Heading and Link */}
+    {(data?.Heading?.trim() || data?.Link?.url?.default) && (
+        <div class="carousel-header flex justify-between items-center mb-6">
+            {data?.Heading?.trim() && (
+                <h2 class="text-3xl font-bold text-base-content">
+                    {data.Heading}
+                </h2>
+            )}
+            {data?.Link?.url?.default && (
+                <a 
+                    href={data.Link.url.default}
+                    target={data.Link.target || '_self'}
+                    class="btn btn-primary"
+                >
+                    {data.Link.text || data.Link.title || 'View All'}
+                </a>
+            )}
+        </div>
+    )}
+    
+    <section
+        id={carouselId}
+        class={`splide ${isContentCarousel ? 'content-carousel' : 'standard-carousel'}`}
+        aria-label="Carousel"
+        data-content-mode={isContentCarousel ? 'true' : 'false'}
+        data-show-arrows={styleConfig.showNavigation.toString()}
+        data-show-pagination={styleConfig.showPagination.toString()}
+        data-autoplay={styleConfig.enableAutoplay.toString()}
+        data-autoplay-delay={styleConfig.autoplayDelay.toString()}
+        data-loop={styleConfig.enableLoop.toString()}
+        data-items-desktop={styleConfig.itemsPerViewDesktop.toString()}
+        data-items-tablet={styleConfig.itemsPerViewTablet.toString()}
+        data-items-mobile={styleConfig.itemsPerViewMobile.toString()}
+        data-space-between={styleConfig.spaceBetween.toString()}
     >
-        {/* Clone of last slide */}
-        {
-            data?.Assets && data.Assets.length > 0 && (
-                <div class="relative h-full w-full flex-shrink-0">
-                    <div class="relative block h-full w-full">
-                        <img
-                            src={
-                                data.Assets[data.Assets.length - 1]?.url
-                                    ?.default
-                            }
-                            alt=""
-                            class="h-full w-full object-cover"
-                        />
-                            {showCaptions && (
-                                <!-- ① Wrapper: von bottom-0 zu inset-0 + Flex-Zentrierung -->
-                                <div class="absolute inset-0 flex items-center justify-center bg-black/10 p-2 text-white md:p-4 text-8xl">
-                                    <!-- ② Heading: h3 -> h1 + größere Schrift -->
-                                    <p class="text-8xl">
-                                        {data.Assets[data.Assets.length - 1]?.title ?? ''}
-                                    </p>
+        <div class="splide__track">
+            <ul class="splide__list">
+                {
+                    carouselData.map((item, index) => (
+                        <li class={`splide__slide ${styleConfig.carouselHeight}`}>
+                            {isContentCarousel ? (
+                                // Content carousel mode - show as cards
+                                <div class="card bg-base-100 shadow-xl h-full">
+                                    <figure class={styleConfig.carouselHeight === 'h-auto' ? 'aspect-video' : 'flex-1'}>
+                                        <Image
+                                            src={item?.url?.default || ''}
+                                            alt={item?.title || `Carousel image ${index + 1} of ${itemCount}`}
+                                            class={`w-full h-full ${styleConfig.imageFit}`}
+                                            inferSize={true}
+                                        />
+                                    </figure>
+                                    {item?.title && (
+                                        <div class="card-body">
+                                            <h3 class="card-title text-lg">
+                                                {item.title}
+                                            </h3>
+                                        </div>
+                                    )}
                                 </div>
-                          )}
-                    </div>
-                </div>
-            )
-        }
-
-        {/* Original slides */}
-        {
-            data?.Assets?.map((item, index) => (
-                <div class="relative h-full w-full flex-shrink-0">
-                    <div class="relative block h-full w-full">
-                        <img
-                            src={item?.url?.default}
-                            alt="todo"
-                            class="h-full w-full object-cover"
-                        />
-                        {showCaptions && (
-      <!-- ① Wrapper: von bottom-0 zu inset-0 + Flex-Zentrierung -->
-      <div class="absolute inset-0 flex items-center justify-center bg-black/10 p-2 text-white md:p-4 text-8xl">
-        <!-- ② Heading: h3 -> h1 + größere Schrift -->
-        <p class="text-8xl">
-            {item?.title ?? ''}
-        </p>
-      </div>
-    )}
-                    </div>
-                </div>
-            ))
-        }
-
-        {/* Clone of first slide */}
-        {
-            data?.Assets && data.Assets.length > 0 && (
-                <div class="relative h-full w-full flex-shrink-0">
-                    <div class="relative block h-full w-full">
-                        <img
-                            src={data.Assets[0]?.url?.default}
-                            alt="todo"
-                            class="h-full w-full object-cover"
-                        />
-                        {showCaptions && (
-      <!-- ① Wrapper: von bottom-0 zu inset-0 + Flex-Zentrierung -->
-      <div class="absolute inset-0 flex items-center justify-center bg-black/10 p-2 text-white md:p-4 text-8xl">
-        <!-- ② Heading: h3 -> h1 + größere Schrift -->
-        <p class="text-8xl">
-            {data.Assets[0]?.title ?? ''}
-        </p>
-      </div>
-    )}
-                    </div>
-                </div>
-            )
-        }
-    </div>
-
-    <!-- Navigation chevrons (if enabled) -->
-    {
-        showChevrons && (
-            <>
-                <button
-                    x-on:click="prev()"
-                    class="absolute top-1/2 left-2 -translate-y-1/2 rounded-full bg-white/80 p-1.5 text-gray-800 shadow-md hover:bg-white focus:ring-2 focus:ring-white/80 focus:ring-offset-2 focus:outline-none md:left-4 md:p-2"
-                    aria-label="Previous slide"
-                >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="h-4 w-4 md:h-6 md:w-6"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M15 19l-7-7 7-7"
-                        />
-                    </svg>
-                </button>
-                <button
-                    x-on:click="next()"
-                    class="absolute top-1/2 right-2 -translate-y-1/2 rounded-full bg-white/80 p-1.5 text-gray-800 shadow-md hover:bg-white focus:ring-2 focus:ring-white/80 focus:ring-offset-2 focus:outline-none md:right-4 md:p-2"
-                    aria-label="Next slide"
-                >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="h-4 w-4 md:h-6 md:w-6"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M9 5l7 7-7 7"
-                        />
-                    </svg>
-                </button>
-            </>
-        )
-    }
-
-    <!-- Indicators (if enabled) -->
-    {
-        showIndicators && (
-            <div class="absolute bottom-2 left-1/2 flex -translate-x-1/2 space-x-1.5 md:bottom-4 md:space-x-2">
-                {data?.Assets?.map((_, index) => (
-                    <button
-                        x-on:click={`goTo(${index})`}
-                        class="h-1 w-4 rounded transition-colors md:w-12"
-                        x-bind:class={`displayIndex === ${index} ? 'bg-gray-800' : 'bg-gray-200'`}
-                        aria-label={`Go to slide ${index + 1}`}
-                    />
-                ))}
-            </div>
-        )
-    }
+                            ) : (
+                                // Standard carousel mode - full width images
+                                <div class="relative w-full h-full">
+                                    <Image
+                                        src={item?.url?.default || ''}
+                                        alt={item?.title || `Carousel image ${index + 1} of ${itemCount}`}
+                                        class={`w-full h-full ${styleConfig.imageFit}`}
+                                        inferSize={true}
+                                    />
+                                </div>
+                            )}
+                        </li>
+                    ))
+                }
+            </ul>
+        </div>
+    </section>
 </div>
 
 <style>
-    /* Ensure parent containers maintain height */
-    :global(.carousel-wrapper) {
-        height: 100%;
+    .carousel-container {
+        position: relative;
+    }
+    
+    /* Content carousel styles */
+    .content-carousel .splide__slide {
+        padding: 0.5rem;
+    }
+    
+    /* Ensure cards fill the available height */
+    .content-carousel .splide__slide .card {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .content-carousel .splide__slide .card figure.flex-1 {
+        flex: 1;
+        display: flex;
+    }
+    
+    /* Arrow styling */
+    .splide__arrow {
+        background: rgba(0, 0, 0, 0.7) !important;
+        border: none !important;
+        border-radius: 50% !important;
+        width: 3rem !important;
+        height: 3rem !important;
+    }
+    
+    .splide__arrow svg {
+        fill: white !important;
+        width: 1.5rem !important;
+        height: 1.5rem !important;
+    }
+    
+    /* Pagination styling */
+    .splide__pagination__page {
+        background: rgba(255, 255, 255, 0.5) !important;
+        border: none !important;
+        border-radius: 50% !important;
+        width: 0.75rem !important;
+        height: 0.75rem !important;
+        margin: 0 0.25rem !important;
+    }
+    
+    .splide__pagination__page.is-active {
+        background: white !important;
     }
 </style>
 
+<!-- Splide CSS -->
+<link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css"
+/>
+
+<!-- Splide JS -->
+<script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
+
 <script>
-    document.addEventListener('alpine:init', () => {
-        window.Alpine.data('infiniteCarousel', (itemCount: number) => {
-            let autoplayInterval: ReturnType<typeof setInterval> | null = null;
-
-            return {
-                currentIndex: 1, // Start at 1 to account for the cloned slide
-                itemCount: itemCount,
-                isTransitioning: false,
-                displayIndex: 0, // For indicators
-
-                get containerStyle() {
-                    return {
-                        transform: `translateX(-${this.currentIndex * 100}%)`,
-                        transition: this.isTransitioning
-                            ? 'transform 500ms ease-in-out'
-                            : 'none',
-                    };
-                },
-
-                next() {
-                    if (this.isTransitioning) return;
-                    this.isTransitioning = true;
-                    this.currentIndex++;
-                    this.displayIndex =
-                        (this.displayIndex + 1) % this.itemCount;
-                },
-
-                prev() {
-                    if (this.isTransitioning) return;
-                    this.isTransitioning = true;
-                    this.currentIndex--;
-                    this.displayIndex =
-                        (this.displayIndex - 1 + this.itemCount) %
-                        this.itemCount;
-                },
-
-                goTo(index: number) {
-                    if (this.isTransitioning) return;
-                    this.isTransitioning = true;
-                    this.currentIndex = index + 1; // Add 1 to account for cloned slide
-                    this.displayIndex = index;
-                },
-
-                handleTransitionEnd() {
-                    this.isTransitioning = false;
-
-                    // If we're at the clone of the last slide (index 0)
-                    if (this.currentIndex === 0) {
-                        this.currentIndex = this.itemCount;
-                    }
-                    // If we're at the clone of the first slide (index itemCount + 1)
-                    else if (this.currentIndex === this.itemCount + 1) {
-                        this.currentIndex = 1;
-                    }
-                },
-
-                startAutoplay() {
-                    if (!autoplayInterval) {
-                        autoplayInterval = setInterval(() => {
-                            this.next();
-                        }, 5000);
-                    }
-                },
-
-                stopAutoplay() {
-                    if (autoplayInterval) {
-                        clearInterval(autoplayInterval);
-                        autoplayInterval = null;
-                    }
-                },
-
-                init() {
-                    this.startAutoplay();
-
-                    // Add event listeners for hover and touch
-                    const container = this.$el;
-                    container.addEventListener('mouseenter', () =>
-                        this.stopAutoplay()
-                    );
-                    container.addEventListener('mouseleave', () =>
-                        this.startAutoplay()
-                    );
-                    container.addEventListener('touchstart', () =>
-                        this.stopAutoplay()
-                    );
-                    container.addEventListener('touchend', () =>
-                        this.startAutoplay()
-                    );
-                },
+    document.addEventListener('astro:page-load', function () {
+        // Find all carousel instances
+        const carousels = document.querySelectorAll('.splide');
+        
+        carousels.forEach((carousel) => {
+            // Skip if already initialized
+            if (carousel.splide) return;
+            
+            // Get configuration from data attributes using camelCase for dataset access
+            const isContentMode = carousel.dataset.contentMode === 'true';
+            const showArrows = carousel.dataset.showArrows === 'true';
+            const showPagination = carousel.dataset.showPagination === 'true';
+            const enableAutoplay = carousel.dataset.autoplay === 'true';
+            const autoplayDelay = parseInt(carousel.dataset.autoplayDelay || '5000');
+            const enableLoop = carousel.dataset.loop === 'true';
+            
+            // Content carousel specific settings
+            const itemsDesktop = parseInt(carousel.dataset.itemsDesktop || '3');
+            const itemsTablet = parseInt(carousel.dataset.itemsTablet || '2');
+            const itemsMobile = parseInt(carousel.dataset.itemsMobile || '1');
+            const spaceBetween = parseInt(carousel.dataset.spaceBetween || '24');
+            
+            
+            // Build configuration
+            let config = {
+                type: enableLoop ? 'loop' : 'slide',
+                arrows: showArrows,
+                pagination: showPagination,
+                autoplay: enableAutoplay,
+                interval: autoplayDelay,
+                pauseOnHover: true,
+                pauseOnFocus: true,
+                speed: 500,
+                easing: 'ease-in-out',
             };
+            
+            if (isContentMode) {
+                // Content carousel with responsive breakpoints
+                // Default is desktop settings
+                config.perPage = itemsDesktop;
+                config.gap = `${spaceBetween}px`;
+                config.breakpoints = {
+                    1023: {
+                        perPage: itemsTablet,
+                        gap: `${spaceBetween}px`,
+                    },
+                    767: {
+                        perPage: itemsMobile,
+                        gap: `${spaceBetween}px`,
+                    },
+                };
+            } else {
+                // Standard carousel - one slide at a time
+                config.perPage = 1;
+                config.gap = 0;
+            }
+            
+            
+            // Initialize Splide
+            if (typeof Splide !== 'undefined') {
+                new Splide(carousel, config).mount();
+            } else {
+                console.error('Splide is not loaded');
+            }
         });
     });
 </script>

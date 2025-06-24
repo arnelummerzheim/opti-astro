@@ -9,9 +9,32 @@ import {
 import {
     OPTIMIZELY_GRAPH_GATEWAY,
     OPTIMIZELY_GRAPH_SINGLE_KEY,
+    OPTIMIZELY_DEV_MODE,
 } from 'astro:env/client';
 
 import type { ContentPayload } from '../graphql/shared/ContentPayload.ts';
+
+// Global store for GraphQL queries in dev mode
+let currentStore: Array<{
+    query: string;
+    variables: any;
+    timestamp: Date;
+    response?: any;
+}> = [];
+
+// Track the last request timestamp to detect new page loads
+let lastRequestTime = 0;
+const REQUEST_RESET_THRESHOLD = 500; // 500ms between requests indicates new page
+
+// Function to get captured queries (for use in components)
+export function getGraphQLQueries() {
+    return currentStore;
+}
+
+// Function to clear query history
+export function clearGraphQLQueries() {
+    currentStore = [];
+}
 
 export function getOptimizelySdk(contentPayload: ContentPayload) {
     const mode = contentPayload.ctx;
@@ -35,8 +58,35 @@ export function getOptimizelySdk(contentPayload: ContentPayload) {
             );
         }
 
+        // Capture query data in dev mode
+        if (OPTIMIZELY_DEV_MODE) {
+            const now = Date.now();
+            
+            // If enough time has passed since last request, assume it's a new page
+            if (now - lastRequestTime > REQUEST_RESET_THRESHOLD) {
+                currentStore = [];
+            }
+            
+            lastRequestTime = now;
+            
+            const queryEntry = {
+                query: print(doc),
+                variables: vars,
+                timestamp: new Date(),
+                response: undefined as any
+            };
+            
+            currentStore.push(queryEntry);
+        }
+
         try {
             const res = await client.rawRequest(print(doc), vars);
+            
+            // Update the response in dev mode
+            if (OPTIMIZELY_DEV_MODE && currentStore.length > 0) {
+                currentStore[currentStore.length - 1].response = res?.data;
+            }
+            
             return res?.data as any;
         } catch (err: any) {
             if (import.meta.env.DEV) {

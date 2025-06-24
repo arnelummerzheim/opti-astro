@@ -1,13 +1,9 @@
 fragment ArticlePageExcerpt on ArticlePage {
     _metadata {
-        url {
-            default
-        }
+        ...PageUrl
     }
     PromoImage {
-        url {
-            default
-        }
+        ...ContentUrl
     }
     Heading
     SubHeading

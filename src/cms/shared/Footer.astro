@@ -1,6 +1,20 @@
 ---
+import { Image as AstroImage } from 'astro:assets';
 import type { SiteSettingsByHostnameQuery } from '../../../__generated/sdk';
 import { getClassForLogo } from './siteSettingsHelper';
+import DevTools from './DevTools.astro';
+
+// Define interfaces for the menu items to fix TypeScript errors
+interface LinkType {
+    text: string;
+    url: {
+        default: string;
+    };
+}
+
+interface FooterItemType {
+    Link: LinkType;
+}
 
 interface Props {
     siteSettings: SiteSettingsByHostnameQuery;
@@ -8,10 +22,12 @@ interface Props {
 
 const { siteSettings } = Astro.props;
 const settings = siteSettings?.SiteSettings?.item;
+
+const logoUrl = (settings?.Logo as any)?.item?.Url || settings?.Logo?.url?.default || null;
 const logoCss = getClassForLogo(settings?.LogoResolution);
 
-const footerItems = settings?.FooterLinks;
-const footerItemCount = footerItems.length;
+const footerItems = settings?.FooterLinks as FooterItemType[] | undefined;
+const footerItemCount = footerItems?.length || 0;
 
 const socialLinkFacebook = "https://www.facebook.com/" + settings?.SocialFacebook;
 const socialLinkInstagram = "https://www.instagram.com/" + settings?.SocialInstagram;
@@ -19,19 +35,23 @@ const socialLinkTwitter = "https://www.twitter.com/" + settings?.SocialTwitter;
 const socialLinkTikTok = "https://www.tiktok.com/@" + settings?.SocialTikTok;
 const socialLinkGitHub = "https://www.github.com/" + settings?.SocialGitHub;
 
+
 ---
 
-<footer class="bg-gray-100">
+<footer class="bg-base-200">
     <div class="mx-auto max-w-5xl px-4 py-16 sm:px-6 lg:px-8">
-        <div class="flex justify-center text-teal-600">
-            <img
-                class={logoCss}
-                src={settings?.Logo?.url?.default ?? '/optimizely-logo.svg'}
+        <div class="flex justify-center text-primary">
+            <AstroImage
+                class:list={[logoCss, "w-full object-contain max-w-full"]}
+                src={logoUrl ?? '/optimizely-logo.svg'}
+                alt="Logo"
+                width=300
+                height=300
             />
         </div>
 
         <p
-            class="mx-auto mt-6 max-w-md text-center leading-relaxed text-gray-500"
+            class="mx-auto mt-6 max-w-md text-center leading-relaxed text-base-content opacity-70"
         >
             {
                 settings?.FooterText ??
@@ -48,10 +68,10 @@ const socialLinkGitHub = "https://www.github.com/" + settings?.SocialGitHub;
                     footerItems.map((data) => 
                         <li>
                             <a
-                                class="text-gray-500 transition hover:text-gray-500/75"
-                                href={data.Link.url.default}
+                                class="text-base-content opacity-70 transition hover:text-primary"
+                                href={data?.Link?.url?.default || '#'}
                             >
-                                {data.Link.text}
+                                {data?.Link?.text || ''}
                             </a>
                         </li>
                     )
@@ -68,7 +88,7 @@ const socialLinkGitHub = "https://www.github.com/" + settings?.SocialGitHub;
                             href={socialLinkFacebook}
                             rel="noreferrer"
                             target="_blank"
-                            class="text-gray-700 transition hover:text-gray-700/75"
+                            class="text-base-content transition hover:text-primary"
                         >
                             <span class="sr-only">Facebook</span>
                             <svg
@@ -95,7 +115,7 @@ const socialLinkGitHub = "https://www.github.com/" + settings?.SocialGitHub;
                             href={socialLinkInstagram}
                             rel="noreferrer"
                             target="_blank"
-                            class="text-gray-700 transition hover:text-gray-700/75"
+                            class="text-base-content transition hover:text-primary"
                         >
                             <span class="sr-only">Instagram</span>
                             <svg
@@ -122,7 +142,7 @@ const socialLinkGitHub = "https://www.github.com/" + settings?.SocialGitHub;
                             href={socialLinkTwitter}
                             rel="noreferrer"
                             target="_blank"
-                            class="text-gray-700 transition hover:text-gray-700/75"
+                            class="text-base-content transition hover:text-primary"
                         >
                             <span class="sr-only">Twitter</span>
                             <svg
@@ -148,7 +168,7 @@ const socialLinkGitHub = "https://www.github.com/" + settings?.SocialGitHub;
                             href={socialLinkTikTok}
                             rel="noreferrer"
                             target="_blank"
-                            class="text-gray-700 transition hover:text-gray-700/75"
+                            class="text-base-content transition hover:text-primary"
                         >
                             <span class="sr-only">TikTok</span>
                             <svg
@@ -172,7 +192,7 @@ const socialLinkGitHub = "https://www.github.com/" + settings?.SocialGitHub;
                             href={socialLinkGitHub}
                             rel="noreferrer"
                             target="_blank"
-                            class="text-gray-700 transition hover:text-gray-700/75"
+                            class="text-base-content transition hover:text-primary"
                         >
                             <span class="sr-only">GitHub</span>
                             <svg
@@ -192,4 +212,7 @@ const socialLinkGitHub = "https://www.github.com/" + settings?.SocialGitHub;
             }
         </ul>
     </div>
+
+    <!-- Developer Tools -->
+    <DevTools />
 </footer>

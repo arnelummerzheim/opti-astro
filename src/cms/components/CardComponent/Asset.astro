@@ -1,4 +1,5 @@
 ---
+import { Image } from 'astro:assets';
 import type {
     CardFragment,
     DisplaySettingsFragment,
@@ -13,20 +14,18 @@ export interface Props {
 }
 const { data, displaySettings, displayTemplateKey, contentPayload } =
     Astro.props as Props;
-const imageUrl = data.Asset?.url?.default || null;
+const imageUrl = (data.Asset as any)?.item?.Url || data.Asset?.url?.default || null;
 ---
 
 <div class="relative mx-auto max-w-4xl">
     {
         imageUrl && (
-            <img
-                alt="Interior Painting"
+            <Image
+                alt={data.Asset?.item?.AltText || data.Asset?.item?._metadata?.displayName || data.Heading || 'Card image'}
                 class="relative content-center rounded-xl border border-transparent object-cover"
-                decoding="async"
-                height="700"
-                loading="lazy"
+                height={700}
+                width={1075}
                 src={imageUrl}
-                width="1075"
             />
         )
     }

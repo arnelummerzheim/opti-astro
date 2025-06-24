@@ -3,11 +3,12 @@ import { defineConfig, envField } from 'astro/config';
 import mkcert from 'vite-plugin-mkcert';
 
 import node from '@astrojs/node';
+import { adapter } from "astro-auto-adapter";
 
 import alpinejs from '@astrojs/alpinejs';
 import tailwindcss from '@tailwindcss/vite';
 
-import pageInsight from 'astro-page-insight';
+const multiAdapter = await adapter();
 
 // https://astro.build/config
 export default defineConfig({
@@ -21,6 +22,10 @@ export default defineConfig({
             {
                 protocol: 'https',
                 hostname: '*.cms.optimizely.com',
+            },
+            {
+                protocol: 'https',
+                hostname: '*.cmp.optimizely.com',
             },
         ],
     },
@@ -44,9 +49,7 @@ export default defineConfig({
 
     output: 'server',
 
-    adapter: node({
-        mode: 'standalone',
-    }),
+    adapter: multiAdapter,
 
     server: { port: 4321 },
     vite: {
@@ -55,7 +58,7 @@ export default defineConfig({
         },
         plugins: [mkcert(), tailwindcss()],
     },
-    integrations: [alpinejs(), pageInsight()],
+    integrations: [alpinejs()],
 
     env: {
         schema: {
@@ -89,6 +92,12 @@ export default defineConfig({
                 access: 'public',
                 optional: true,
                 default: 0,
+            }),
+            OPTIMIZELY_DEV_MODE: envField.boolean({
+                context: 'client',
+                access: 'public',
+                optional: true,
+                default: false,
             }),
         },
     },

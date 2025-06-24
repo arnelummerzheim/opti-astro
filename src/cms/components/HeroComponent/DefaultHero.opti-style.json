@@ -1,6 +1,6 @@
 {
   "key": "DefaultHero",
-  "displayName": "Default Hero",
+  "displayName": "Hero Default",
   "contentType": "Hero",
   "isDefault": true,
   "settings": {
@@ -109,6 +109,48 @@
         "o_100": {
           "displayName": "100",
           "sortOrder": 100
+        }
+      }
+    },
+    "backgroundColor": {
+      "displayName": "Background Color",
+      "editor": "",
+      "sortOrder": 70,
+      "choices": {
+        "transparent": {
+          "displayName": "Transparent",
+          "sortOrder": 10
+        },
+        "white": {
+          "displayName": "White",
+          "sortOrder": 20
+        },
+        "blue": {
+          "displayName": "Blue",
+          "sortOrder": 30
+        },
+        "red": {
+          "displayName": "Red",
+          "sortOrder": 40
+        }
+      }
+    },
+    "image_fit": {
+      "displayName": "Image Fit",
+      "editor": "",
+      "sortOrder": 80,
+      "choices": {
+        "object_cover": {
+          "displayName": "Cover (Fill Container, May Crop)",
+          "sortOrder": 10
+        },
+        "object_contain": {
+          "displayName": "Contain (Show Full Image, May Have Gaps)",
+          "sortOrder": 20
+        },
+        "object_fill": {
+          "displayName": "Fill (Stretch to Fit)",
+          "sortOrder": 30
         }
       }
     }
