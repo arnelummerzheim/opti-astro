@@ -1,0 +1,74 @@
+{
+	"key": "GenericProduct",
+	"displayName": "Generic Product",
+	"description": "A product card with name, description, image, and action buttons (Add to Cart, Wishlist).",
+	"baseType": "component",
+	"sortOrder": 0,
+	"mayContainTypes": [],
+	"mediaFileExtensions": [],
+	"compositionBehaviors": [
+		"sectionEnabled",
+		"elementEnabled"
+	],
+	"properties": {
+		"GenericProductName": {
+			"type": "string",
+			"displayName": "Product Name",
+			"description": "The name/title of the product",
+			"localized": true,
+			"required": false,
+			"group": "Information",
+			"sortOrder": 0,
+			"indexingType": "searchable",
+			"editorSettings": {}
+		},
+		"GenericProductDescription": {
+			"type": "string",
+			"format": "html",
+			"displayName": "Product Description",
+			"description": "Rich text description of the product",
+			"localized": true,
+			"required": false,
+			"group": "Information",
+			"sortOrder": 10,
+			"indexingType": "searchable",
+			"editorSettings": {}
+		},
+		"GenericProductAsset": {
+			"type": "contentReference",
+			"displayName": "Product Image",
+			"description": "Main product image",
+			"localized": true,
+			"required": false,
+			"group": "Information",
+			"sortOrder": 20,
+			"editorSettings": {},
+			"allowedTypes": [
+				"Image"
+			],
+			"restrictedTypes": []
+		},
+		"ProductPrice": {
+			"type": "string",
+			"displayName": "Product Price",
+			"description": "Display price of the product",
+			"localized": true,
+			"required": false,
+			"group": "Information",
+			"sortOrder": 30,
+			"indexingType": "searchable",
+			"editorSettings": {}
+		},
+		"AddToCartText": {
+			"type": "string",
+			"displayName": "Add to Cart Text",
+			"description": "Custom text for the Add to Cart button (defaults to 'Add to Cart')",
+			"localized": true,
+			"required": false,
+			"group": "Information",
+			"sortOrder": 40,
+			"indexingType": "queryable",
+			"editorSettings": {}
+		}
+	}
+}

@@ -1,8 +1,7 @@
 <script lang="ts">
-  import { OPTIMIZELY_GRAPH_GATEWAY, OPTIMIZELY_GRAPH_SINGLE_KEY } from 'astro:env/client';
-  import StatusMessage from '../shared/_StatusMessage.svelte';
-  import LoadingSpinner from '../shared/_LoadingSpinner.svelte';
-  import WipBadge from '../shared/_WipBadge.svelte';
+  import { OPTIMIZELY_GRAPH_GATEWAY, OPTIMIZELY_GRAPH_APP_KEY, OPTIMIZELY_GRAPH_SECRET } from 'astro:env/client';
+  import StatusMessage from '../../../shared/_StatusMessage.svelte';
+  import LoadingSpinner from '../../../shared/_LoadingSpinner.svelte';
   import PublishedPagesChart from './_PublishedPagesChart.svelte';
   import PublishedPagesTable from './_PublishedPagesTable.svelte';
 
@@ -132,18 +131,19 @@
         }
       `;
 
-      // Fetch from GraphQL endpoint
+      // Fetch from GraphQL endpoint using App Key + Secret for draft content access
       console.log('GraphQL Endpoint:', OPTIMIZELY_GRAPH_GATEWAY);
       console.log('Query:', query);
 
-      if (!OPTIMIZELY_GRAPH_GATEWAY || !OPTIMIZELY_GRAPH_SINGLE_KEY) {
-        throw new Error('Missing GraphQL configuration. Please check your environment variables.');
+      if (!OPTIMIZELY_GRAPH_GATEWAY || !OPTIMIZELY_GRAPH_APP_KEY || !OPTIMIZELY_GRAPH_SECRET) {
+        throw new Error('Missing GraphQL configuration. Please check your environment variables (need App Key and Secret for draft content).');
       }
 
-      const response = await fetch(`${OPTIMIZELY_GRAPH_GATEWAY}/content/v2?auth=${OPTIMIZELY_GRAPH_SINGLE_KEY}`, {
+      const response = await fetch(`${OPTIMIZELY_GRAPH_GATEWAY}/content/v2`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Basic ${btoa(`${OPTIMIZELY_GRAPH_APP_KEY}:${OPTIMIZELY_GRAPH_SECRET}`)}`
         },
         body: JSON.stringify({ query })
       });
@@ -236,8 +236,22 @@
   );
 </script>
 
-<div class="max-w-7xl">
-  <WipBadge size="large" message="This feature is actively being developed. Action tracking is saved locally to help plan content migrations." />
+<div class="w-full">
+  <!-- Info box explaining the action column -->
+  <div class="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+    <div class="flex items-start gap-3">
+      <svg class="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+      <div class="flex-1">
+        <h3 class="text-sm font-semibold text-blue-900 mb-1">Action Tracking for Content Migration Planning</h3>
+        <p class="text-sm text-blue-800">
+          Use the <strong>Action</strong> column to mark pages for migration planning. Choose "Copy as is", "Copy + changes", or "Ignore" for each page.
+          Your selections are automatically saved to your browser's localStorage and persist between sessions.
+        </p>
+      </div>
+    </div>
+  </div>
 
   <div class="mb-8">
     <h1 class="text-3xl font-bold text-gray-900 mb-2">Published Pages Dashboard</h1>

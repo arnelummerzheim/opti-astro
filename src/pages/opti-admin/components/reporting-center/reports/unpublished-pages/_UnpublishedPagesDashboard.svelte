@@ -1,27 +1,26 @@
 <script lang="ts">
-  import { OPTIMIZELY_GRAPH_GATEWAY, OPTIMIZELY_GRAPH_SINGLE_KEY } from 'astro:env/client';
-  import StatusMessage from '../shared/_StatusMessage.svelte';
-  import LoadingSpinner from '../shared/_LoadingSpinner.svelte';
-  import WipBadge from '../shared/_WipBadge.svelte';
-  import PublishedPagesChart from './_PublishedPagesChart.svelte';
-  import PublishedPagesTable from './_PublishedPagesTable.svelte';
+  import { OPTIMIZELY_GRAPH_GATEWAY, OPTIMIZELY_GRAPH_APP_KEY, OPTIMIZELY_GRAPH_SECRET } from 'astro:env/client';
+  import StatusMessage from '../../../shared/_StatusMessage.svelte';
+  import LoadingSpinner from '../../../shared/_LoadingSpinner.svelte';
+  import WipBadge from '../../../shared/_WipBadge.svelte';
+  import UnpublishedPagesChart from './_UnpublishedPagesChart.svelte';
+  import UnpublishedPagesTable from './_UnpublishedPagesTable.svelte';
 
-  interface PublishedPage {
+  interface UnpublishedPage {
     id: string;
     title: string;
     url: string;
-    published: string;
+    created: string;
     lastModified: string;
     owner: string;
     locale: string;
     status: string;
     baseUrl: string;
     contentType: string[];
-    action?: 'copy' | 'copy-with-changes' | 'ignore';
   }
 
   // State
-  let pages = $state<PublishedPage[]>([]);
+  let pages = $state<UnpublishedPage[]>([]);
   let isLoading = $state(false);
   let message = $state('');
   let messageType = $state<'success' | 'error'>('success');
@@ -31,9 +30,6 @@
   let searchQuery = $state('');
   let filterLocale = $state<string>('all');
   let availableLocales = $state<string[]>([]);
-
-  // Days to look back
-  const daysToLookBack = 365;
 
   function displayMessage(text: string, isSuccess: boolean) {
     message = text;
@@ -46,64 +42,30 @@
 
   // Load pages on mount
   $effect(() => {
-    loadPublishedPages();
+    loadUnpublishedPages();
   });
 
-  // Load saved actions from localStorage
-  function loadSavedActions() {
-    try {
-      const saved = localStorage.getItem('opti-published-pages-actions');
-      if (saved) {
-        const actions: Record<string, 'copy' | 'copy-with-changes' | 'ignore'> = JSON.parse(saved);
-        pages = pages.map(page => ({
-          ...page,
-          action: actions[page.id] || undefined
-        }));
-      }
-    } catch (error) {
-      console.error('Error loading saved actions:', error);
-    }
-  }
-
-  // Save action to localStorage
-  function saveAction(pageId: string, action: 'copy' | 'copy-with-changes' | 'ignore') {
-    try {
-      const saved = localStorage.getItem('opti-published-pages-actions');
-      const actions: Record<string, 'copy' | 'copy-with-changes' | 'ignore'> = saved ? JSON.parse(saved) : {};
-      actions[pageId] = action;
-      localStorage.setItem('opti-published-pages-actions', JSON.stringify(actions));
-    } catch (error) {
-      console.error('Error saving action:', error);
-    }
-  }
-
-  async function loadPublishedPages() {
+  async function loadUnpublishedPages() {
     isLoading = true;
     showMessage = false;
 
     try {
-      // Calculate the date from 10 days ago
-      const tenDaysAgo = new Date();
-      tenDaysAgo.setDate(tenDaysAgo.getDate() - daysToLookBack);
-      const dateFilter = tenDaysAgo.toISOString();
-
-      // GraphQL query to fetch published pages from the last 10 days
+      // GraphQL query to fetch draft/unpublished page versions
+      // Using App Key + Secret authentication with status filter
+      // Status "Published" means live, anything else (like empty/null) means draft
       const query = `
-        query GetPublishedPages {
+        query GetUnpublishedPages {
           _Page(
             limit: 100
             orderBy: {
               _metadata: {
-                published: DESC
+                lastModified: DESC
               }
             }
             where: {
               _metadata: {
                 status: {
-                  eq: "Published"
-                }
-                published: {
-                  gte: "${dateFilter}"
+                  notEq: "Published"
                 }
               }
             }
@@ -117,12 +79,14 @@
                   default
                   base
                 }
-                published
+                created
                 lastModified
                 locale
                 status
                 key
                 types
+                published
+                version
               }
               ... on ArticlePage {
                 Author
@@ -132,18 +96,19 @@
         }
       `;
 
-      // Fetch from GraphQL endpoint
+      // Fetch from GraphQL endpoint using App Key + Secret for draft content access
       console.log('GraphQL Endpoint:', OPTIMIZELY_GRAPH_GATEWAY);
       console.log('Query:', query);
 
-      if (!OPTIMIZELY_GRAPH_GATEWAY || !OPTIMIZELY_GRAPH_SINGLE_KEY) {
-        throw new Error('Missing GraphQL configuration. Please check your environment variables.');
+      if (!OPTIMIZELY_GRAPH_GATEWAY || !OPTIMIZELY_GRAPH_APP_KEY || !OPTIMIZELY_GRAPH_SECRET) {
+        throw new Error('Missing GraphQL configuration. Please check your environment variables (need App Key and Secret for draft content).');
       }
 
-      const response = await fetch(`${OPTIMIZELY_GRAPH_GATEWAY}/content/v2?auth=${OPTIMIZELY_GRAPH_SINGLE_KEY}`, {
+      const response = await fetch(`${OPTIMIZELY_GRAPH_GATEWAY}/content/v2`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Basic ${btoa(`${OPTIMIZELY_GRAPH_APP_KEY}:${OPTIMIZELY_GRAPH_SECRET}`)}`
         },
         body: JSON.stringify({ query })
       });
@@ -165,14 +130,91 @@
       }
 
       const items = result.data?._Page?.items || [];
+      console.log('=== UNPUBLISHED PAGES DEBUG ===');
       console.log('Total items found:', items.length);
 
-      // Transform data
-      pages = items.map((item: any) => ({
+      // Analyze all unique status values
+      const statusSet = new Set<string>();
+      items.forEach((item: any) => {
+        if (item._metadata?.status) {
+          statusSet.add(item._metadata.status);
+        }
+      });
+      console.log('Unique status values found:', Array.from(statusSet));
+
+      // Show sample of first 10 items
+      console.log('Sample items (first 10):', items.slice(0, 10).map((item: any) => ({
+        title: item._metadata?.displayName,
+        published: item._metadata?.published,
+        status: item._metadata?.status,
+        types: item._metadata?.types,
+        locale: item._metadata?.locale,
+        version: item._metadata?.version
+      })));
+
+      // Transform data and filter to only include Pages (exclude Experiences, Blocks, etc.)
+      const filteredItems: any[] = [];
+      const excludedItems: any[] = [];
+
+      items.forEach((item: any) => {
+        const types = item._metadata?.types || [];
+
+        // Only include if it's a Page type (not Experience or Block)
+        const isExperience = types.some((type: string) =>
+          type.includes('_Experience') || type.includes('Experience')
+        );
+        const isBlock = types.some((type: string) =>
+          type.includes('_Block') || type.includes('Block') || type.includes('ShareableContent')
+        );
+
+        if (isExperience) {
+          excludedItems.push({
+            title: item._metadata?.displayName,
+            reason: 'is Experience',
+            types
+          });
+          return;
+        }
+
+        if (isBlock) {
+          excludedItems.push({
+            title: item._metadata?.displayName,
+            reason: 'is Block/ShareableContent',
+            types
+          });
+          return;
+        }
+
+        // Filter to only show non-published versions
+        // Status "Published" means this version is live
+        // Any other status (CheckedOut, etc.) means it's a draft
+        const status = item._metadata?.status || '';
+        if (status === 'Published') {
+          excludedItems.push({
+            title: item._metadata?.displayName,
+            reason: 'status is Published',
+            status,
+            locale: item._metadata?.locale
+          });
+          return;
+        }
+
+        filteredItems.push(item);
+      });
+
+      console.log('Excluded items (showing first 5):', excludedItems.slice(0, 5));
+      console.log('Items passing filter:', filteredItems.length);
+      console.log('Filtered items by locale:', filteredItems.reduce((acc: any, item: any) => {
+        const locale = item._metadata?.locale || 'unknown';
+        acc[locale] = (acc[locale] || 0) + 1;
+        return acc;
+      }, {}));
+
+      pages = filteredItems.map((item: any) => ({
         id: item._id,
         title: item._metadata?.displayName || 'Untitled',
         url: item._metadata?.url?.default || '',
-        published: item._metadata?.published || '',
+        created: item._metadata?.created || '',
         lastModified: item._metadata?.lastModified || '',
         owner: item.Author || extractOwner(item._metadata?.key || ''),
         locale: item._metadata?.locale || '',
@@ -181,18 +223,17 @@
         contentType: item._metadata?.types || []
       }));
 
+      console.log('Final pages array:', pages.length, pages);
+
       // Extract unique locales for filter
       const locales = new Set(pages.map(p => p.locale));
       availableLocales = Array.from(locales).sort();
 
-      // Load saved actions
-      loadSavedActions();
-
-      displayMessage(`✅ Loaded ${pages.length} published pages`, true);
+      displayMessage(`✅ Loaded ${pages.length} draft pages`, true);
     } catch (error) {
       const errorMsg = '❌ Error loading pages: ' + (error instanceof Error ? error.message : 'Unknown error');
       displayMessage(errorMsg, false);
-      console.error('Error loading published pages:', error);
+      console.error('Error loading unpublished pages:', error);
     } finally {
       isLoading = false;
     }
@@ -204,18 +245,6 @@
     // This is a simplified extraction - adjust based on your actual key format
     const parts = key.split('_');
     return parts.length > 1 ? parts[1] : 'Unknown';
-  }
-
-  function setAction(pageId: string, action: 'copy' | 'copy-with-changes' | 'ignore') {
-    const index = pages.findIndex(p => p.id === pageId);
-    if (index !== -1) {
-      pages[index] = {
-        ...pages[index],
-        action
-      };
-      pages = [...pages]; // Trigger reactivity
-      saveAction(pageId, action);
-    }
   }
 
   // Computed filtered pages
@@ -236,12 +265,12 @@
   );
 </script>
 
-<div class="max-w-7xl">
-  <WipBadge size="large" message="This feature is actively being developed. Action tracking is saved locally to help plan content migrations." />
+<div class="w-full">
+  <WipBadge size="large" message="This feature is actively being developed. Showing all draft pages awaiting publication." />
 
   <div class="mb-8">
-    <h1 class="text-3xl font-bold text-gray-900 mb-2">Published Pages Dashboard</h1>
-    <p class="text-gray-600">Overview of pages published in the last <strong>{daysToLookBack} days</strong></p>
+    <h1 class="text-3xl font-bold text-gray-900 mb-2">Unpublished Pages Dashboard</h1>
+    <p class="text-gray-600">Overview of all draft pages awaiting publication</p>
   </div>
 
   {#if showMessage}
@@ -252,7 +281,7 @@
   <div class="bg-white rounded-lg shadow-md p-4 border border-gray-200 mb-6">
     <div class="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
       <button
-        onclick={loadPublishedPages}
+        onclick={loadUnpublishedPages}
         disabled={isLoading}
         class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
       >
@@ -270,7 +299,7 @@
         <input
           type="text"
           bind:value={searchQuery}
-          placeholder="Search pages..."
+          placeholder="Search draft pages..."
           class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
         />
         <select
@@ -288,16 +317,14 @@
 
   <!-- Charts -->
   {#if !isLoading && filteredPages.length > 0}
-    <PublishedPagesChart pages={filteredPages} />
+    <UnpublishedPagesChart pages={filteredPages} />
   {/if}
 
   <!-- Pages Table -->
-  <PublishedPagesTable
+  <UnpublishedPagesTable
     pages={filteredPages}
     {isLoading}
     {searchQuery}
     {filterLocale}
-    {daysToLookBack}
-    onSetAction={setAction}
   />
 </div>

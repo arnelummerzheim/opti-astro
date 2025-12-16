@@ -59,8 +59,8 @@ export default defineConfig({
                 optional: true,
             }),
             OPTIMIZELY_GRAPH_SECRET: envField.string({
-                context: 'server',
-                access: 'secret',
+                context: 'client',
+                access: 'public',
                 optional: false,
             }),
             OPTIMIZELY_GRAPH_APP_KEY: envField.string({

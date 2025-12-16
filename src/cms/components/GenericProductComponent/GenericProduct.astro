@@ -1,0 +1,147 @@
+---
+import { Image as AstroImage } from 'astro:assets';
+import type {
+    GenericProductFragment,
+    DisplaySettingsFragment,
+} from '../../../../__generated/sdk';
+import type { ContentPayload } from '../../../graphql/shared/ContentPayload';
+import { getGlobalStyles } from '../../shared/globalStylesHelper';
+import { isEditContext } from '../../shared/utils.ts';
+
+const isCmsEdit = isEditContext(Astro.url);
+
+export interface Props {
+    key: string;
+    data: GenericProductFragment;
+    displaySettings: DisplaySettingsFragment[];
+    displayTemplateKey: string;
+    contentPayload: ContentPayload;
+}
+
+const { key, data, displaySettings } = Astro.props as Props;
+
+// Extract product data
+const productName = data.GenericProductName || '';
+const productDescription = data.GenericProductDescription?.html || '';
+const productPrice = data.ProductPrice || '';
+const addToCartText = data.AddToCartText || 'Add to Cart';
+
+// Get image URL
+const imageUrl = (data.GenericProductAsset as any)?.item?.Url ||
+                 data.GenericProductAsset?.url?.default || null;
+const imageAlt = (data.GenericProductAsset as any)?.item?.AltText ||
+                 productName ||
+                 'Product image';
+
+// Get global styles
+const globalStyles = getGlobalStyles(displaySettings);
+
+const componentClass = 'component-generic-product';
+---
+
+<div
+    data-epi-block-id={isCmsEdit && key || undefined}
+    class:list={[componentClass, globalStyles]}
+    x-data="{
+        inWishlist: false,
+        addingToCart: false,
+        toggleWishlist() {
+            this.inWishlist = !this.inWishlist;
+            console.log('Wishlist toggled:', this.inWishlist);
+        },
+        addToCart() {
+            this.addingToCart = true;
+            console.log('Adding to cart:', this.productName);
+            setTimeout(() => {
+                this.addingToCart = false;
+                // Here you would typically dispatch a custom event or call an API
+            }, 800);
+        },
+        get productName() { return {JSON.stringify(productName)}; }
+    }"
+>
+    <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow duration-300">
+        <!-- Product Image -->
+        {imageUrl && (
+            <figure class="relative aspect-square overflow-hidden">
+                <AstroImage
+                    src={imageUrl}
+                    alt={imageAlt}
+                    inferSize
+                    class="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                />
+
+                <!-- Wishlist Button (Heart Icon) - Positioned over image -->
+                <button
+                    @click="toggleWishlist()"
+                    class="absolute top-4 right-4 btn btn-circle btn-sm bg-base-100/80 hover:bg-base-100 border-none"
+                    :class="{ 'text-error': inWishlist, 'text-base-content/60': !inWishlist }"
+                    aria-label="Add to wishlist"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-5 w-5 transition-all duration-200"
+                        :class="{ 'fill-current': inWishlist, 'fill-none': !inWishlist }"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        stroke-width="2"
+                    >
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                    </svg>
+                </button>
+            </figure>
+        )}
+
+        <!-- Product Info -->
+        <div class="card-body">
+            <!-- Product Name -->
+            {productName && (
+                <h2 class="card-title text-lg lg:text-xl">
+                    {productName}
+                </h2>
+            )}
+
+            <!-- Product Description -->
+            {productDescription && (
+                <div
+                    class="text-sm text-base-content/70 line-clamp-3"
+                    set:html={productDescription}
+                />
+            )}
+
+            <!-- Price and Actions -->
+            <div class="card-actions items-center justify-between mt-4">
+                <!-- Price -->
+                {productPrice && (
+                    <div class="text-xl font-bold text-primary">
+                        {productPrice}
+                    </div>
+                )}
+
+                <!-- Add to Cart Button -->
+                <button
+                    @click="addToCart()"
+                    :disabled="addingToCart"
+                    class="btn btn-primary"
+                    :class="{ 'loading': addingToCart }"
+                >
+                    <span x-show="!addingToCart">{addToCartText}</span>
+                    <span x-show="addingToCart" x-cloak>Adding...</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Alpine.js cloak to prevent flash of unstyled content */
+    [x-cloak] { display: none !important; }
+
+    /* Line clamp fallback for older browsers */
+    .line-clamp-3 {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+</style>

@@ -125,6 +125,24 @@
                     <p class="text-sm text-gray-600">Track recently published pages and plan content migration actions</p>
                 </div>
             </button>
+
+            <!-- Reporting Center Card -->
+            <button onclick={() => navigateTo('reporting-center')} class="group block bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-200 overflow-hidden border border-gray-200 hover:border-pink-500 text-left cursor-pointer">
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-3 bg-pink-100 rounded-lg group-hover:bg-pink-200 transition-colors">
+                            <svg class="w-6 h-6 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                        </div>
+                        <svg class="w-5 h-5 text-gray-400 group-hover:text-pink-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+                    <h4 class="text-lg font-semibold text-gray-900 mb-2 group-hover:text-pink-600 transition-colors">Reporting Center</h4>
+                    <p class="text-sm text-gray-600">Comprehensive reports and analytics including published and unpublished pages</p>
+                </div>
+            </button>
         </div>
     </div>
 

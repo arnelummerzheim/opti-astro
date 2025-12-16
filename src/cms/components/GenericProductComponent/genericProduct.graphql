@@ -1,0 +1,11 @@
+fragment GenericProduct on GenericProduct {
+    GenericProductName
+    GenericProductDescription {
+        html
+    }
+    GenericProductAsset {
+        ...ContentUrl
+    }
+    ProductPrice
+    AddToCartText
+}
