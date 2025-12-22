@@ -1,7 +1,7 @@
 {
 	"key": "GenericProduct",
 	"displayName": "Generic Product",
-	"description": "A product card with name, description, image, and action buttons (Add to Cart, Wishlist).",
+	"description": "",
 	"baseType": "component",
 	"sortOrder": 0,
 	"mayContainTypes": [],
@@ -11,64 +11,74 @@
 		"elementEnabled"
 	],
 	"properties": {
-		"GenericProductName": {
+		"ProductSKU": {
 			"type": "string",
-			"displayName": "Product Name",
-			"description": "The name/title of the product",
-			"localized": true,
+			"format": "shortString",
+			"displayName": "Product SKU (Optional)",
+			"description": "Enter SKU to auto-populate product data from catalog. Leave empty to enter data manually. Example: TS-BLU-MD-001",
+			"localized": false,
 			"required": false,
 			"group": "Information",
-			"sortOrder": 0,
+			"sortOrder": -150,
+			"indexingType": "queryable",
+			"editorSettings": {}
+		},
+		"GenericProductName": {
+			"type": "string",
+			"format": "shortString",
+			"displayName": "Product name",
+			"description": "",
+			"localized": false,
+			"required": false,
+			"group": "Information",
+			"sortOrder": -100,
 			"indexingType": "searchable",
 			"editorSettings": {}
 		},
 		"GenericProductDescription": {
 			"type": "string",
 			"format": "html",
-			"displayName": "Product Description",
-			"description": "Rich text description of the product",
-			"localized": true,
+			"displayName": "Product description",
+			"description": "",
+			"localized": false,
 			"required": false,
 			"group": "Information",
-			"sortOrder": 10,
+			"sortOrder": 0,
 			"indexingType": "searchable",
 			"editorSettings": {}
 		},
-		"GenericProductAsset": {
-			"type": "contentReference",
-			"displayName": "Product Image",
-			"description": "Main product image",
-			"localized": true,
-			"required": false,
-			"group": "Information",
-			"sortOrder": 20,
-			"editorSettings": {},
-			"allowedTypes": [
-				"Image"
-			],
-			"restrictedTypes": []
-		},
 		"ProductPrice": {
-			"type": "string",
-			"displayName": "Product Price",
-			"description": "Display price of the product",
-			"localized": true,
+			"type": "float",
+			"displayName": "ProductPrice",
+			"description": "",
+			"localized": false,
 			"required": false,
 			"group": "Information",
-			"sortOrder": 30,
-			"indexingType": "searchable",
+			"sortOrder": 0,
 			"editorSettings": {}
 		},
 		"AddToCartText": {
 			"type": "string",
-			"displayName": "Add to Cart Text",
-			"description": "Custom text for the Add to Cart button (defaults to 'Add to Cart')",
-			"localized": true,
+			"format": "shortString",
+			"displayName": "AddToCartText",
+			"description": "",
+			"localized": false,
 			"required": false,
 			"group": "Information",
-			"sortOrder": 40,
-			"indexingType": "queryable",
+			"sortOrder": 50,
 			"editorSettings": {}
+		},
+		"GenericProductAsset": {
+			"type": "contentReference",
+			"displayName": "Asset",
+			"description": "",
+			"localized": false,
+			"required": false,
+			"group": "Information",
+			"sortOrder": 100,
+			"editorSettings": {},
+			"allowedTypes": [],
+			"restrictedTypes": []
 		}
 	}
 }

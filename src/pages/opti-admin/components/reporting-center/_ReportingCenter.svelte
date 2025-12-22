@@ -3,6 +3,9 @@
   import PublishedPagesDashboard from './reports/published-pages/_PublishedPagesDashboard.svelte';
   import UnpublishedPagesDashboard from './reports/unpublished-pages/_UnpublishedPagesDashboard.svelte';
   import ContentLifecycleDashboard from './reports/content-lifecycle/_ContentLifecycleDashboard.svelte';
+  import AuthorProductivityDashboard from './reports/author-productivity/_AuthorProductivityDashboard.svelte';
+  import UserPerformanceDashboard from './reports/user-performance/_UserPerformanceDashboard.svelte';
+  import ContentQualityDashboard from './reports/content-quality/_ContentQualityDashboard.svelte';
 
   // State for current report
   let currentReport = $state<string>('published-pages');
@@ -26,6 +29,24 @@
       name: 'Content Lifecycle',
       description: 'Pages not updated recently',
       icon: 'clock'
+    },
+    {
+      id: 'author-productivity',
+      name: 'Author Performance',
+      description: 'Track content author performance and velocity',
+      icon: 'users'
+    },
+    {
+      id: 'user-performance',
+      name: 'User Performance',
+      description: 'Track CMS user activity and content management',
+      icon: 'chart'
+    },
+    {
+      id: 'content-quality',
+      name: 'Content Quality Score',
+      description: 'Assess content completeness and SEO readiness',
+      icon: 'badge-check'
     }
   ];
 
@@ -94,6 +115,12 @@
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
                     {:else if report.icon === 'clock'}
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    {:else if report.icon === 'users'}
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                    {:else if report.icon === 'chart'}
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    {:else if report.icon === 'badge-check'}
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     {/if}
                   </svg>
                   <div class="flex-1 min-w-0">
@@ -116,6 +143,12 @@
         <UnpublishedPagesDashboard />
       {:else if currentReport === 'content-lifecycle'}
         <ContentLifecycleDashboard />
+      {:else if currentReport === 'author-productivity'}
+        <AuthorProductivityDashboard />
+      {:else if currentReport === 'user-performance'}
+        <UserPerformanceDashboard />
+      {:else if currentReport === 'content-quality'}
+        <ContentQualityDashboard />
       {/if}
     </main>
   </div>

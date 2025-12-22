@@ -1,4 +1,5 @@
 fragment GenericProduct on GenericProduct {
+    ProductSKU
     GenericProductName
     GenericProductDescription {
         html

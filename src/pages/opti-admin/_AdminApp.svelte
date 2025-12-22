@@ -8,6 +8,7 @@
   import RedirectManagement from './components/_RedirectManagement.svelte';
   import PublishedPagesDashboard from './components/published-pages/_PublishedPagesDashboard.svelte';
   import ReportingCenter from './components/reporting-center/_ReportingCenter.svelte';
+  import ProductCatalog from './components/_ProductCatalog.svelte';
   import Sidebar from './components/_Sidebar.svelte';
 
   interface Props {
@@ -50,7 +51,8 @@
       'style-manager': 'Style Manager',
       'redirects': 'Redirect Management',
       'published-pages': 'Published Pages Dashboard',
-      'reporting-center': 'Reporting Center'
+      'reporting-center': 'Reporting Center',
+      'product-catalog': 'Product Catalog'
     };
     document.title = `${titles[view] || 'Dashboard'} | Optimizely Admin`;
   }
@@ -175,6 +177,19 @@
       </div>
       <ReportingCenter />
     </div>
+  {:else if currentView === 'product-catalog'}
+    <div>
+      <!-- Back to Dashboard -->
+      <div class="mb-6">
+        <button onclick={() => navigateTo('dashboard')} class="inline-flex items-center text-blue-600 hover:text-blue-800 transition-colors">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+          </svg>
+          Back to Dashboard
+        </button>
+      </div>
+      <ProductCatalog />
+    </div>
   {/if}
     </div>
   </div>
@@ -195,6 +210,12 @@
 
   .admin-app {
     padding: 2rem;
+  }
+
+  @media (min-width: 1280px) {
+    .admin-app {
+      padding-right: 18rem;
+    }
   }
 
   @media (max-width: 768px) {

@@ -7,6 +7,14 @@ import type {
 import type { ContentPayload } from '../../../graphql/shared/ContentPayload';
 import { getGlobalStyles } from '../../shared/globalStylesHelper';
 import { isEditContext } from '../../shared/utils.ts';
+import { formatCurrency } from '../../../lib/currency-helpers';
+import { getProductBySKU } from '../../../lib/product-catalog-utils';
+import {
+    getImageAspectRatioClasses,
+    getCardStyleClasses,
+    getButtonTypeClass,
+    getButtonSizeClass
+} from './GenericProductStyling';
 
 const isCmsEdit = isEditContext(Astro.url);
 
@@ -18,25 +26,93 @@ export interface Props {
     contentPayload: ContentPayload;
 }
 
-const { key, data, displaySettings } = Astro.props as Props;
+const { key, data, displaySettings, contentPayload } = Astro.props as Props;
 
-// Extract product data
-const productName = data.GenericProductName || '';
-const productDescription = data.GenericProductDescription?.html || '';
-const productPrice = data.ProductPrice || '';
+// Get current locale
+const locale = contentPayload.loc.includes('_')
+    ? contentPayload.loc.split('_')[0].toLowerCase()
+    : contentPayload.loc.toLowerCase();
+
+// Check if SKU is provided
+const hasSKU = !!data.ProductSKU;
+let catalogProduct = null;
+
+if (hasSKU) {
+    // Fetch product from catalog
+    catalogProduct = await getProductBySKU(data.ProductSKU!, locale);
+
+    if (!catalogProduct) {
+        console.warn(`Product not found for SKU: ${data.ProductSKU}`);
+    }
+}
+
+// Priority: If valid SKU with catalog product, use catalog data; otherwise use CMS manual data
+const productName = (hasSKU && catalogProduct)
+    ? (catalogProduct.name?.[locale] || catalogProduct.name?.['en'] || '')
+    : (data.GenericProductName || '');
+
+const productDescription = (hasSKU && catalogProduct)
+    ? (catalogProduct.description?.[locale] || catalogProduct.description?.['en'] || '')
+    : (data.GenericProductDescription?.html || '');
+
 const addToCartText = data.AddToCartText || 'Add to Cart';
 
-// Get image URL
-const imageUrl = (data.GenericProductAsset as any)?.item?.Url ||
-                 data.GenericProductAsset?.url?.default || null;
-const imageAlt = (data.GenericProductAsset as any)?.item?.AltText ||
-                 productName ||
-                 'Product image';
+// Price handling
+let productPriceRaw: number;
+if (!hasSKU && data.ProductPrice) {
+    // CMS price override - only when NO SKU (manual product)
+    productPriceRaw = data.ProductPrice;
+} else if (catalogProduct) {
+    // Use catalog price (sale price if available, otherwise regular price)
+    productPriceRaw = catalogProduct.salePrice ?? catalogProduct.price;
+} else {
+    productPriceRaw = 0;
+}
 
-// Get global styles
+// Use catalog currency when available, otherwise use locale-based currency
+const productCurrency = catalogProduct?.currency || undefined;
+const formattedPrice = productPriceRaw > 0
+    ? formatCurrency(productPriceRaw, contentPayload.loc, productCurrency)
+    : '';
+
+// Format sale price separately if it exists (when SKU is present or no CMS override)
+const formattedSalePrice = ((hasSKU || !data.ProductPrice) && catalogProduct?.salePrice)
+    ? formatCurrency(catalogProduct.salePrice, contentPayload.loc, productCurrency)
+    : null;
+
+// Format regular price for strikethrough display
+const formattedRegularPrice = ((hasSKU || !data.ProductPrice) && catalogProduct?.salePrice)
+    ? formatCurrency(catalogProduct.price, contentPayload.loc, productCurrency)
+    : null;
+
+// Image handling - Priority: catalog image when SKU exists, otherwise CMS image
+let imageUrl: string | null = null;
+let imageAlt: string = productName || 'Product image';
+
+if (hasSKU && catalogProduct?.images && catalogProduct.images.length > 0) {
+    // Use catalog image when SKU is provided
+    const primaryImage = catalogProduct.images.find(img => img.isPrimary) || catalogProduct.images[0];
+    imageUrl = primaryImage.url;
+    imageAlt = primaryImage.alt;
+} else if (data.GenericProductAsset) {
+    // Fallback to CMS image if no SKU or catalog product
+    imageUrl = (data.GenericProductAsset as any)?.item?.Url ||
+               data.GenericProductAsset?.url?.default || null;
+    imageAlt = (data.GenericProductAsset as any)?.item?.AltText || imageAlt;
+}
+
+// Get styling from display settings
 const globalStyles = getGlobalStyles(displaySettings);
+const imageAspectClass = getImageAspectRatioClasses(displaySettings);
+const cardStyleClass = getCardStyleClasses(displaySettings);
+const buttonTypeClass = getButtonTypeClass(displaySettings);
+const buttonSizeClass = getButtonSizeClass(displaySettings);
 
 const componentClass = 'component-generic-product';
+
+// Availability status for visual indicators
+const availability = catalogProduct?.availability || 'InStock';
+const isOutOfStock = availability === 'OutOfStock';
 ---
 
 <div
@@ -51,19 +127,25 @@ const componentClass = 'component-generic-product';
         },
         addToCart() {
             this.addingToCart = true;
-            console.log('Adding to cart:', this.productName);
+            console.log('Adding to cart:', this.$el.dataset.productName, 'SKU:', this.$el.dataset.sku);
             setTimeout(() => {
                 this.addingToCart = false;
                 // Here you would typically dispatch a custom event or call an API
             }, 800);
-        },
-        get productName() { return {JSON.stringify(productName)}; }
+        }
     }"
+    data-product-name={productName}
+    data-sku={data.ProductSKU || 'manual'}
 >
-    <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow duration-300">
+    <div class:list={['card bg-base-100 transition-shadow duration-300 max-w-md mx-auto', cardStyleClass, { 'opacity-75': isOutOfStock }]}>
+        <!-- Out of Stock Badge -->
+        {isOutOfStock && (
+            <div class="absolute top-4 left-4 badge badge-error z-10">Out of Stock</div>
+        )}
+
         <!-- Product Image -->
         {imageUrl && (
-            <figure class="relative aspect-square overflow-hidden">
+            <figure class:list={['relative overflow-hidden w-full', imageAspectClass]}>
                 <AstroImage
                     src={imageUrl}
                     alt={imageAlt}
@@ -94,6 +176,25 @@ const componentClass = 'component-generic-product';
 
         <!-- Product Info -->
         <div class="card-body">
+            <!-- Product Metadata (if SKU provided) -->
+            {hasSKU && (
+                <div class="flex flex-wrap items-center gap-2 mb-2">
+                    <span class="badge badge-sm bg-blue-100 text-blue-700 border-blue-200">
+                        Article: {data.ProductSKU}
+                    </span>
+                    {catalogProduct?.brand && (
+                        <span class="badge badge-sm bg-purple-100 text-purple-700 border-purple-200">
+                            Brand: {catalogProduct.brand}
+                        </span>
+                    )}
+                    {catalogProduct?.category && (
+                        <span class="badge badge-sm bg-amber-100 text-amber-700 border-amber-200">
+                            Category: {catalogProduct.category}
+                        </span>
+                    )}
+                </div>
+            )}
+
             <!-- Product Name -->
             {productName && (
                 <h2 class="card-title text-lg lg:text-xl">
@@ -111,22 +212,51 @@ const componentClass = 'component-generic-product';
 
             <!-- Price and Actions -->
             <div class="card-actions items-center justify-between mt-4">
-                <!-- Price -->
-                {productPrice && (
-                    <div class="text-xl font-bold text-primary">
-                        {productPrice}
-                    </div>
-                )}
+                <!-- Price Display -->
+                <div class="flex flex-col gap-1">
+                    {/* CMS Override Case - Only when NO SKU */}
+                    {!hasSKU && data.ProductPrice && (
+                        <div class="flex items-baseline gap-2">
+                            <div class:list={['text-2xl font-bold', { 'text-base-content': !isOutOfStock, 'text-base-content/50': isOutOfStock }]}>
+                                {formatCurrency(data.ProductPrice, contentPayload.loc, catalogProduct?.currency)}
+                            </div>
+                            <span class="badge badge-info badge-sm">Custom Price</span>
+                        </div>
+                    )}
+
+                    {/* Catalog Price - Sale Price Scenario */}
+                    {(hasSKU || !data.ProductPrice) && formattedSalePrice && formattedRegularPrice && (
+                        <div class="flex flex-col gap-0.5">
+                            <div class="text-xs text-base-content/40 line-through font-normal">
+                                {formattedRegularPrice}
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class:list={['text-2xl font-bold text-red-600', { 'opacity-50': isOutOfStock }]}>
+                                    {formattedSalePrice}
+                                </div>
+                                <span class="badge badge-error badge-md font-semibold">SALE</span>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Catalog Price - Regular Price Only */}
+                    {(hasSKU || !data.ProductPrice) && !formattedSalePrice && formattedPrice && (
+                        <div class:list={['text-2xl font-bold', { 'text-base-content': !isOutOfStock, 'text-base-content/50': isOutOfStock }]}>
+                            {formattedPrice}
+                        </div>
+                    )}
+                </div>
 
                 <!-- Add to Cart Button -->
                 <button
                     @click="addToCart()"
                     :disabled="addingToCart"
-                    class="btn btn-primary"
+                    class:list={['btn', buttonTypeClass, buttonSizeClass]}
                     :class="{ 'loading': addingToCart }"
+                    disabled={isOutOfStock}
                 >
-                    <span x-show="!addingToCart">{addToCartText}</span>
-                    <span x-show="addingToCart" x-cloak>Adding...</span>
+                    <span x-show="!addingToCart">{isOutOfStock ? 'Out of Stock' : addToCartText}</span>
+                    <span x-show="addingToCart">Adding...</span>
                 </button>
             </div>
         </div>
@@ -134,9 +264,6 @@ const componentClass = 'component-generic-product';
 </div>
 
 <style>
-    /* Alpine.js cloak to prevent flash of unstyled content */
-    [x-cloak] { display: none !important; }
-
     /* Line clamp fallback for older browsers */
     .line-clamp-3 {
         display: -webkit-box;
