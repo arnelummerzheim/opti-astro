@@ -46,6 +46,14 @@ PREVIEW_DELAY=1000
 OPTIMIZELY_FORMS_ENABLED=false
 ```
 
+### Sitemap Configuration
+
+```bash
+# Base URL for absolute URLs in sitemap.xml
+# Default: Uses request origin
+SITEMAP_BASE_URL=https://example.com
+```
+
 ### Preview & External Access
 
 ```bash
@@ -59,6 +67,21 @@ EXTERNAL_PREVIEW_TOKEN=your_preview_token_here
 
 # CMS URL for client-side operations (optional)
 OPTIMIZELY_CMS_URL=https://cms.optimizely.com
+```
+
+### Admin Dashboard Authentication
+
+```bash
+## HTTP Basic Authentication credentials for /admin route
+## If not configured, the admin dashboard will return 404
+
+# Admin username for HTTP Basic Authentication (default: admin)
+# Only required if using admin dashboard
+ADMIN_DASHBOARD_USERNAME=your-admin-username-here
+
+# Admin password for HTTP Basic Authentication (keep secure!)
+# Only required if using admin dashboard
+ADMIN_DASHBOARD_PASSWORD=your-secure-password-here
 ```
 
 ## 🏗️ Environment Setup
@@ -183,6 +206,18 @@ If you need external preview functionality:
 - **Requirement**: Both username and password must be set for admin dashboard to be accessible
 - **Usage**: Enables Basic Auth protection for /admin route and all admin APIs
 - **Note**: If not configured, admin dashboard returns 404 to hide its existence
+
+### SITEMAP_BASE_URL
+- **Type**: String (URL)
+- **Access**: Server-side only
+- **Default**: Uses request origin
+- **Purpose**: Base URL for generating absolute URLs in sitemap.xml
+- **Example**: `https://example.com`
+- **Use Cases**:
+  - Ensure consistent URLs in sitemap across different environments
+  - Required for correct sitemap generation in serverless environments
+  - Override when deployed behind proxies or CDNs
+- **Note**: Sitemap caching is handled by CDN/browser via `Cache-Control` headers (1 hour default)
 
 
 ## 🚀 Development vs Production

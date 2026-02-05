@@ -10,9 +10,11 @@ import { getHeroStyles } from './HeroStyling';
 import { getGlobalStyles } from '../../shared/globalStylesHelper';
 import LinkButton from '../ButtonComponent/LinkButton.astro';
 import { getButtonStyles } from '../ButtonComponent/ButtonStyling';
-import { isEditContext } from '../../shared/utils.ts';
+import { isEditContext, getLink } from '../../shared/utils.ts';
+import type { ButtonLinkData } from '../../shared/utils.ts';
 
 const isCmsEdit = isEditContext(Astro.url);
+const currentDomain = Astro.url.origin;
 
 export interface Props {
     key: string;
@@ -42,11 +44,13 @@ const hoverClasses = {
     'transition-transform duration-300 hover:scale-105 overflow-hidden': hoverEffect === 'zoom',
     'transition-transform duration-300 hover:scale-[1.02] overflow-hidden': hoverEffect === 'zoom_subtle',
 };
+
+const componentClass = 'component-hero';
 ---
 
 <section
     class="relative flex w-full items-center"
-    class:list={[justifyClass, heightClass, globalStyles, hoverClasses]}
+    class:list={[justifyClass, heightClass, globalStyles, hoverClasses, componentClass]}
     data-epi-block-id={isCmsEdit && key || undefined}    
 >
     {
@@ -96,6 +100,8 @@ const hoverClasses = {
         <div class="mt-6 flex space-x-4" class:list={justifyClass}>
             {
                 data?.Links?.map((link, i) => {
+                    const buttonLink = getLink(link as ButtonLinkData, currentDomain);
+                    const newWindow = link?.target === '_blank';
                     const buttonType: string[] = [""];
                     switch (i) {
                         case 0:
@@ -118,7 +124,7 @@ const hoverClasses = {
                             break;
                     }
                     return (
-                        <LinkButton cssClasses={[buttonType, heroButtonStyles]} link={link?.url?.default}>{link?.text}</LinkButton>
+                        <LinkButton cssClasses={[buttonType, heroButtonStyles]} link={buttonLink} newWindow={newWindow}>{link?.text}</LinkButton>
                     );
                 })
             }

@@ -11,9 +11,10 @@ import {
     OPTIMIZELY_GRAPH_GATEWAY,
     OPTIMIZELY_GRAPH_SINGLE_KEY,
     OPTIMIZELY_GRAPH_APP_KEY,
+    OPTIMIZELY_GRAPH_SECRET,
     OPTIMIZELY_DEV_MODE,
 } from 'astro:env/client';
-import { OPTIMIZELY_GRAPH_SECRET, EXTERNAL_PREVIEW_ENABLED } from 'astro:env/server';
+import { EXTERNAL_PREVIEW_ENABLED } from 'astro:env/server';
 
 import type { ContentPayload } from '../graphql/shared/ContentPayload.ts';
 
