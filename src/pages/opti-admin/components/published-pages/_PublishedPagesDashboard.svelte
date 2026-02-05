@@ -33,7 +33,7 @@
   let availableLocales = $state<string[]>([]);
 
   // Days to look back
-  const daysToLookBack = 10;
+  const daysToLookBack = 365;
 
   function displayMessage(text: string, isSuccess: boolean) {
     message = text;

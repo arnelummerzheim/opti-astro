@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+
 /* @import './inter.css'; */
 /* @theme {--font-sans: InterVariable, sans-serif;} */
 
@@ -48,6 +49,7 @@
 }
 
 @layer base {
+   
     ul {
         @apply list-inside list-disc;
     }

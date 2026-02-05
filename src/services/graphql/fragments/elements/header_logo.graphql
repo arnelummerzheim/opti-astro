@@ -1,0 +1,11 @@
+query SiteLogoQuery {
+  SiteLogo(ids: "a0e12fc456f4488da829c713a5c07406") {
+    items {
+      HeaderLogo {
+        url {
+          default
+        }
+      }
+    }
+  }
+}
